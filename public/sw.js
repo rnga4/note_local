@@ -30,8 +30,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((cache) => cache.put("/", copy));
+          if (url.pathname === "/") {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put("/", copy));
+          }
           return res;
         })
         .catch(() => caches.match("/")),
