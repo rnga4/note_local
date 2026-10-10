@@ -50,7 +50,7 @@ English for every visible string, `lang="en"` to match.
 
 - **ENERGY 1**: the interface says hello once, quietly. No hero, no oversized type, no decorative gestures.
 - **RHYTHM 1**: sections are uniform on purpose. Composer, then one grid, then the same grid under each heading. Variation is not the goal here; predictability is.
-- **MOTION 2**: enter transitions only — one shot, 150ms, one easing, no loops, no scroll reveals, no parallax. Four moments move, each for a reason: a note card rises 4px and fades in so a new or freshly filtered note shows where it landed; the editor scrim fades in and the panel rises 4px so the dialog reads as lifted from the card it came from; the mobile menu drops in 4px so opening the disclosure is visible; colors cross-fade 150ms so a theme or note-color change is a blend, not a cut. `prefers-reduced-motion` disables all of it. The original direction answer was MOTION 1 (hover only); the owner raised it the same day, on 2026-10-08, asking for transitions that feel smooth.
+- **MOTION 2**: enter transitions only: one shot, 150ms, one easing, no loops, no scroll reveals, no parallax. Four moments move, each for a reason: a note card rises 4px and fades in so a new or freshly filtered note shows where it landed; the editor scrim fades in and the panel rises 4px so the dialog reads as lifted from the card it came from; the mobile menu drops in 4px so opening the disclosure is visible; colors cross-fade 150ms so a theme or note-color change is a blend, not a cut. `prefers-reduced-motion` disables all of it. The original direction answer was MOTION 1 (hover only); the owner raised it the same day, on 2026-10-08, asking for transitions that feel smooth.
 
 ## Identity motif
 
@@ -73,7 +73,7 @@ Flat hairline surfaces: every surface is a solid fill with a 1px border, no shad
 - No shadows and no blur anywhere: elevation is carried by the modal scrim alone, which keeps the flat hairline motif intact (R-12, R-10).
 - The Save button is the only inverted element on screen: the single deliberate accent, spent once (Part 3, one deliberate accent).
 - MOTION dial raised 1 → 2: the owner asked for animations that feel smooth; every moving element has a written purpose, runs once, and dies under prefers-reduced-motion (R-19).
-- One duration and one easing for all motion: 150ms, `cubic-bezier(0.4, 0, 0.2, 1)` — uniform motion fits RHYTHM 1; choreography does not.
+- One duration and one easing for all motion: 150ms, `cubic-bezier(0.4, 0, 0.2, 1)`: uniform motion fits RHYTHM 1; choreography does not.
 - Enter only, no exit: exits would need per-component unmount animation code for a feeling the app does not need; the cross-fade covers the rest (R-19).
 - Empty trash needs a second tap: one click permanently deletes rows in a local no-backup app, so the first tap only arms a "Confirm empty trash?" that cools off after a few seconds.
 - Composer draft autosaves to localStorage: switching views, a refresh, or a closed tab no longer eats a half-typed note; Save or Cancel clears it.

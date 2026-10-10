@@ -23,6 +23,7 @@ export function NotesApp() {
   const [editing, setEditing] = useState<Note | null>(null);
   const [navOpen, setNavOpen] = useState(false);
   const [status, setStatus] = useState<Status>("loading");
+  const [loadedScope, setLoadedScope] = useState<string | null>(null);
   const notesRef = useRef(notes);
   const openerRef = useRef<HTMLElement | null>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -37,6 +38,7 @@ export function NotesApp() {
       setNotes(n);
       setLabels(r.labels);
       setTrashCount(r.trashedCount);
+      setLoadedScope(`${view}\u0000${label}`);
       setStatus("ready");
     } catch (e) {
       console.error(e);
@@ -135,6 +137,8 @@ export function NotesApp() {
     onEmptyTrash: emptyTrash,
   };
 
+  const scopeReady = loadedScope === `${view}\u0000${label}`;
+
   let body;
   if (status === "error") {
     body = (
@@ -145,7 +149,7 @@ export function NotesApp() {
         </button>
       </div>
     );
-  } else if (status === "loading" && notes.length === 0) {
+  } else if (!scopeReady || (status === "loading" && notes.length === 0)) {
     body = (
       <p role="status" className="mt-16 text-center text-sm text-[var(--muted)]">
         Loading notes...
