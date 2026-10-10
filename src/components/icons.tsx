@@ -118,6 +118,43 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
+export function CopyIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <rect x="8.5" y="8.5" width="11" height="11" rx="1" />
+      <path d="M15.5 8.5V5.5a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3" />
+    </Svg>
+  );
+}
+
+export function ChevronRightIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M9 6l6 6-6 6" />
+    </Svg>
+  );
+}
+
+export function PaletteIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 2-.8 2-2 0-.5-.2-1-.6-1.3-.3-.4-.4-.8-.4-1.2 0-1 .8-1.5 1.8-1.5h1.7a4.5 4.5 0 0 0 4.5-4.5C21 6.3 17 3.5 12 3.5z" />
+      <circle cx="8" cy="10" r="1" />
+      <circle cx="12" cy="7.5" r="1" />
+      <circle cx="16" cy="10" r="1" />
+    </Svg>
+  );
+}
+
+export function LabelIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M4 4h7.5L20 12.5 12.5 20 4 11.5z" />
+      <circle cx="8.5" cy="8.5" r="1.2" />
+    </Svg>
+  );
+}
+
 export function ImageIcon({ className }: IconProps) {
   return (
     <Svg className={className}>

@@ -359,6 +359,16 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
     }
   };
 
+  const copyNote = async (n: Note) => {
+    const text = [n.title, n.content, ...n.items.map((i) => i.text)].filter(Boolean).join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      setToast({ id: Date.now(), msg: "Note copied" });
+    } catch {
+      setToast({ id: Date.now(), msg: "Copy failed. Your browser blocked clipboard access." });
+    }
+  };
+
   const importFile = async (file: File) => {
     try {
       const data = JSON.parse(await file.text());
@@ -391,7 +401,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
       const t = e.target as HTMLElement | null;
       const typing = !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (document.querySelector('[role="dialog"]')) return;
+      if (document.querySelector('[role="dialog"], [role="menu"]')) return;
 
       if (gRef.current) {
         gRef.current = false;
@@ -480,9 +490,11 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
           manualLast={sort === "manual" && view !== "trash" && idx === list.length - 1}
           retentionDays={retentionDays}
           query={q}
+          allLabels={labels}
           onOpen={openEditor}
           onPatch={patch}
           onDelete={remove}
+          onCopy={copyNote}
           onToggleSelect={toggleSelect}
           onMove={move}
         />

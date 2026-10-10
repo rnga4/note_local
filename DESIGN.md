@@ -97,4 +97,5 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - Images are note attachments stored as data URLs in the note row: the whole app is one SQLite file with no blob store, so keeping images inline keeps backup and import a single JSON round trip; uploads are downscaled to 1280px JPEG so a photo does not bloat the file.
 - PWA share target: the manifest accepts a shared title, text, and URL into a `/share` route that pre-fills a new note, so capturing from the phone share sheet lands in the app instead of a text dump.
 - Offline writes queue instead of failing: a change that cannot reach the server is kept optimistically in the list and replayed on reconnect, because a local-first tool that loses a note typed on the train is not trustworthy.
+- Custom right-click menu on note cards: the native browser menu is replaced with the app's own (Open, pin, archive, trash, copy text, color, labels), so a desktop user reaches a card's actions where the pointer already is; it stays keyboard-operable (Shift+F10, arrow keys, Escape) rather than disabling right-click outright.
 
