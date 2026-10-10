@@ -9,5 +9,6 @@ services:
       - NODE_ENV=production
       - DB_PATH=/data/notes.db
       - TZ=Asia/Jakarta
+      - APP_PASSWORD=${APP_PASSWORD}
     volumes:
       - ./data:/data
