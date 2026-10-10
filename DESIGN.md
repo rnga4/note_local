@@ -45,11 +45,11 @@ English for every visible string, `lang="en"` to match.
 
 ## Dials
 
-`Dial: ENERGY 3 / RHYTHM 2 / MOTION 2`
+`Dial: ENERGY 3 / RHYTHM 2 / MOTION 3`
 
 - **ENERGY 3**: the interface says hello hard. Thick outlines, hard shadows, one electric accent, weight everywhere. It is a tool the owner chose to make loud.
 - **RHYTHM 2**: the notes grid stays a predictable masonry, but the headings and the states break it. Uniformity where scanning matters, a break where a section starts.
-- **MOTION 2**: one-shot enter transitions (150ms, one easing) plus a physical press on buttons. Purposes: a new or freshly filtered note rises 4px so it shows where it landed; the editor scrim fades and the panel rises so the dialog reads as lifted from the card it came from; the mobile menu drops 4px so opening the disclosure is visible; a button shifts 3px into its shadow on press so the click feels physical. `prefers-reduced-motion` disables all of it.
+- **MOTION 3**: every state change gets an exit as well as an entry, so the interface replies instead of cutting. Entries run once (150-200ms); one snap easing (`--ease-snap`, a slight overshoot) is reserved for the playful moments. Purposes: a new or freshly rendered note rises 4px and staggers in so the list shows where it landed; a note being removed collapses 180ms before the data changes so a destructive tap is visibly answered; the editor panel springs up on open and sinks on close, with the scrim cross-fading both ways; the mobile menu is an accordion (`grid-template-rows` 0fr to 1fr) so the disclosure slides; the undo toast springs in from the bottom and sinks out; a chosen color swatch pops to 1.15 before settling; cards lift 2px and deepen their shadow on hover; buttons shift into their shadow on press. `prefers-reduced-motion` disables all of it.
 
 ## Identity motif
 
@@ -66,7 +66,7 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - Card action buttons stay plain, with no border or shadow: a dense toolbar of outlined boxes would out-shout the cards themselves.
 - Note colors stay user content, restyled as flat tinted blocks under the same ink border: the user's color lives inside the motif instead of fighting it.
 - Focus ring is a 3px ink outline with offset: it stays visible on every surface in both themes and clears 3:1 (R-32).
-- MOTION stays 2 from the owner's earlier request: enter transitions run once, plus a press shift on buttons (R-19).
+- MOTION raised to 3 by the owner on 2026-10-10: keep every enter, add matching exits (card collapse, editor close, toast, menu accordion) and a hover lift, so actions get a visible reply instead of a cut (R-19).
 - Monochrome chrome replaced: color is no longer reserved for note content alone; the accent now carries the primary action.
 - Cards and the composer lift 4px, buttons 3px: elevation is the motif, not a soft shadow, so the amount is a fixed offset with a written reason (R-12).
 - System font stack kept over a display face: the owner chose the system stack to preserve instant render on a local machine.
@@ -82,3 +82,5 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - Focus returns to the control that opened a dialog or the mobile menu: closing lands keyboard focus back where it started (R-32).
 - Download backup: a quiet link that streams every note as JSON with a dated filename; a local-only app should make getting data out as easy as putting it in.
 - Optimistic edits roll back if the save fails: the list does not keep showing a PATCH that never landed.
+- Trashing a note shows a toast with Undo: a local app with no cloud backup should let a mis-tap be reversed in place, so the optimistic trash stays one tap from recovery.
+- `/` focuses search and Escape clears it: a keyboard-first local tool should reach its one text field without the mouse, and the shortcut is guarded so it never fires while typing.

@@ -1,4 +1,5 @@
 "use client";
+import { useState, type CSSProperties } from "react";
 import { noteClass } from "@/lib/colors";
 import type { Note, NotePatch, View } from "@/lib/types";
 import { ArchiveIcon, EditIcon, PinIcon, RestoreIcon, TrashIcon } from "./icons";
@@ -6,6 +7,7 @@ import { ArchiveIcon, EditIcon, PinIcon, RestoreIcon, TrashIcon } from "./icons"
 type Props = {
   note: Note;
   view: View;
+  index?: number;
   onOpen: (n: Note) => void;
   onPatch: (id: string, p: NotePatch) => void;
   onDelete: (id: string) => void;
@@ -14,14 +16,25 @@ type Props = {
 const btn =
   "grid h-11 w-11 place-items-center text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]";
 
-export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
+export function NoteCard({ note, view, index = 0, onOpen, onPatch, onDelete }: Props) {
+  const [leaving, setLeaving] = useState(false);
+
+  const leave = (fn: () => void) => {
+    if (leaving) return;
+    setLeaving(true);
+    setTimeout(fn, 170);
+  };
+
   const toggle = (itemId: string) =>
     onPatch(note.id, { items: note.items.map((i) => (i.id === itemId ? { ...i, done: !i.done } : i)) });
 
   const showUntitled = !note.title && !(note.type === "text" && note.content);
 
   return (
-    <article className={`nb group relative mb-3 break-inside-avoid p-3 ${noteClass(note.color)}`}>
+    <article
+      className={`nb nb-card group relative mb-3 break-inside-avoid p-3 ${noteClass(note.color)} ${leaving ? "leaving" : ""}`}
+      style={leaving ? undefined : ({ "--enter-delay": `${Math.min(index, 12) * 35}ms` } as CSSProperties)}
+    >
       {note.pinned && view === "notes" && (
         <span className="absolute right-2 top-2 border-2 border-[var(--border)] bg-[var(--text)] px-1.5 py-0.5 text-xs font-bold text-[var(--bg)]">
           Pinned
@@ -82,7 +95,7 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
               className={btn}
               title="Restore"
               aria-label="Restore note"
-              onClick={() => onPatch(note.id, { trashed: false })}
+              onClick={() => leave(() => onPatch(note.id, { trashed: false }))}
             >
               <RestoreIcon />
             </button>
@@ -91,7 +104,7 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
               className={btn}
               title="Delete forever"
               aria-label="Delete note forever"
-              onClick={() => onDelete(note.id)}
+              onClick={() => leave(() => onDelete(note.id))}
             >
               <TrashIcon />
             </button>
@@ -117,7 +130,7 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
               title={note.archived ? "Unarchive" : "Archive"}
               aria-label={note.archived ? "Unarchive note" : "Archive note"}
               aria-pressed={note.archived}
-              onClick={() => onPatch(note.id, { archived: !note.archived })}
+              onClick={() => leave(() => onPatch(note.id, { archived: !note.archived }))}
             >
               <ArchiveIcon />
             </button>
@@ -126,7 +139,7 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
               className={btn}
               title="Move to trash"
               aria-label="Move note to trash"
-              onClick={() => onPatch(note.id, { trashed: true })}
+              onClick={() => leave(() => onPatch(note.id, { trashed: true }))}
             >
               <TrashIcon />
             </button>

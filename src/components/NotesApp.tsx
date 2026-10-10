@@ -7,6 +7,7 @@ import { MenuIcon } from "./icons";
 import { NoteCard } from "./NoteCard";
 import { NoteEditor } from "./NoteEditor";
 import { NavList, Sidebar } from "./Sidebar";
+import { Toast } from "./Toast";
 
 type Status = "loading" | "ready" | "error";
 
@@ -27,6 +28,8 @@ export function NotesApp() {
   const notesRef = useRef(notes);
   const openerRef = useRef<HTMLElement | null>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [toast, setToast] = useState<{ id: number; msg: string; undo?: () => void } | null>(null);
 
   useEffect(() => {
     notesRef.current = notes;
@@ -52,6 +55,18 @@ export function NotesApp() {
     return () => clearTimeout(t);
   }, [refresh]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const run = async (fn: () => Promise<unknown>) => {
     try {
       await fn();
@@ -66,6 +81,9 @@ export function NotesApp() {
   const patch = async (id: string, p: NotePatch) => {
     const prev = notesRef.current;
     setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, ...p } : n)));
+    if (p.trashed === true) {
+      setToast({ id: Date.now(), msg: "Note moved to trash", undo: () => void patch(id, { trashed: false }) });
+    }
     try {
       await api.patch(id, p);
       await refresh();
@@ -114,11 +132,12 @@ export function NotesApp() {
 
   const grid = (list: Note[]) => (
     <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
-      {list.map((n) => (
+      {list.map((n, idx) => (
         <NoteCard
           key={n.id}
           note={n}
           view={view}
+          index={idx}
           onOpen={openEditor}
           onPatch={patch}
           onDelete={remove}
@@ -215,15 +234,35 @@ export function NotesApp() {
           </button>
           <h1 className="shrink-0 text-lg font-black tracking-tight">Notes</h1>
           <input
+            ref={searchRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape" && q) {
+                e.preventDefault();
+                setQ("");
+              }
+            }}
             placeholder="Search notes"
             aria-label="Search notes"
+            aria-keyshortcuts="/"
+            title="Search notes (press /)"
             className="nb min-h-11 min-w-0 flex-1 px-3 text-sm placeholder:text-[var(--muted)] md:max-w-xl"
           />
         </div>
-        <div id="nav-panel" hidden={!navOpen} className="enter-drop border-t-2 border-[var(--border)] px-2 py-2 md:hidden">
-          <NavList {...navProps} />
+        <div
+          id="nav-panel"
+          aria-hidden={!navOpen}
+          inert={!navOpen}
+          className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] md:hidden ${
+            navOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="border-t-2 border-[var(--border)] px-2 py-2">
+              <NavList {...navProps} />
+            </div>
+          </div>
         </div>
       </header>
 
@@ -236,6 +275,16 @@ export function NotesApp() {
       </div>
 
       {editing && <NoteEditor key={editing.id} note={editing} onSave={patch} onClose={closeEditor} />}
+
+      {toast && (
+        <Toast
+          key={toast.id}
+          message={toast.msg}
+          actionLabel={toast.undo ? "Undo" : undefined}
+          onAction={toast.undo}
+          onDismiss={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

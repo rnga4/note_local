@@ -10,9 +10,16 @@ type Props = { note: Note; onSave: (id: string, p: NotePatch) => void; onClose: 
 
 export function NoteEditor({ note, onSave, onClose }: Props) {
   const [d, setD] = useState<Note>(note);
+  const [closing, setClosing] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const saveRef = useRef<() => void>(() => {});
   const patch = (p: Partial<Note>) => setD((x) => ({ ...x, ...p }));
+
+  const close = () => {
+    if (closing) return;
+    setClosing(true);
+    setTimeout(onClose, 160);
+  };
 
   const save = () => {
     onSave(note.id, {
@@ -23,7 +30,7 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
       labels: d.labels,
       pinned: d.pinned,
     });
-    onClose();
+    close();
   };
 
   useEffect(() => {
@@ -67,8 +74,8 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
 
   return (
     <div
-      className="enter-fade fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[var(--scrim)] p-4"
-      onClick={save}
+      className={`${closing ? "exit-fade" : "enter-fade"} fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[var(--scrim)] p-4`}
+      onClick={close}
     >
       <div
         ref={panelRef}
@@ -76,7 +83,7 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
         aria-modal="true"
         aria-label="Edit note"
         onClick={(e) => e.stopPropagation()}
-        className={`nb my-auto w-full max-w-xl p-4 ${noteClass(d.color)} max-h-[calc(100dvh-2rem)] overflow-y-auto`}
+        className={`nb ${closing ? "exit-sheet" : "enter-sheet"} my-auto w-full max-w-xl p-4 ${noteClass(d.color)} max-h-[calc(100dvh-2rem)] overflow-y-auto`}
       >
         <input
           value={d.title}
