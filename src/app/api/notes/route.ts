@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createNote, emptyTrash, listNotes } from "@/lib/notes";
-import { NoteInput, ViewSchema } from "@/lib/types";
+import { createNote, emptyTrash, listNotes, purgeTrash } from "@/lib/notes";
+import { NoteInput, SortSchema, ViewSchema } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const view = ViewSchema.catch("notes").parse(sp.get("view"));
-  return NextResponse.json(listNotes(view, sp.get("q") ?? undefined, sp.get("label") ?? undefined));
+  const sort = SortSchema.catch("updated").parse(sp.get("sort"));
+  purgeTrash();
+  return NextResponse.json(listNotes(view, sp.get("q") ?? undefined, sp.get("label") ?? undefined, sort));
 }
 
 export async function POST(req: NextRequest) {

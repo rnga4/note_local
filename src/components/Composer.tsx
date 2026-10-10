@@ -52,6 +52,12 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
   }, []);
 
   useEffect(() => {
+    const onCompose = () => setOpen(true);
+    window.addEventListener("note:compose", onCompose);
+    return () => window.removeEventListener("note:compose", onCompose);
+  }, []);
+
+  useEffect(() => {
     if (!hasContent) {
       clearDraft();
       return;

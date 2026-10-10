@@ -7,9 +7,10 @@ type Props = {
   actionLabel?: string;
   onAction?: () => void;
   onDismiss: () => void;
+  className?: string;
 };
 
-export function Toast({ message, actionLabel, onAction, onDismiss }: Props) {
+export function Toast({ message, actionLabel, onAction, onDismiss, className = "bottom-4" }: Props) {
   const [leaving, setLeaving] = useState(false);
 
   const dismiss = () => {
@@ -25,7 +26,7 @@ export function Toast({ message, actionLabel, onAction, onDismiss }: Props) {
   }, []);
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-[60] -translate-x-1/2">
+    <div className={`fixed left-1/2 z-[60] -translate-x-1/2 ${className}`}>
       <div
         role="status"
         className={`nb ${leaving ? "exit-sheet" : "enter-sheet"} flex items-center gap-2 px-3 py-2`}

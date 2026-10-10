@@ -91,3 +91,29 @@ export function MenuIcon({ className }: IconProps) {
     </Svg>
   );
 }
+
+export function ArrowUpIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M12 19V5" />
+      <path d="M6 11l6-6 6 6" />
+    </Svg>
+  );
+}
+
+export function ArrowDownIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M12 5v14" />
+      <path d="M6 13l6 6 6-6" />
+    </Svg>
+  );
+}
+
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M5 12.5l4.5 4.5L19 7" />
+    </Svg>
+  );
+}

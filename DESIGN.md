@@ -84,3 +84,12 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - Optimistic edits roll back if the save fails: the list does not keep showing a PATCH that never landed.
 - Trashing a note shows a toast with Undo: a local app with no cloud backup should let a mis-tap be reversed in place, so the optimistic trash stays one tap from recovery.
 - `/` focuses search and Escape clears it: a keyboard-first local tool should reach its one text field without the mouse, and the shortcut is guarded so it never fires while typing.
+- Import backup added, matching Download backup: an export with no way back is a one-way door, so a validated JSON import upserts by id and closes the restore loop.
+- Labels become editable objects, not free text: a sidebar row for the active label can rename it across every note or delete it everywhere (two-step), so a typo is fixable instead of permanent.
+- Sort control with a manual mode: Last updated is the default, but the owner asked for order by date created, title, or a hand-picked sequence, persisted in `localStorage`.
+- Manual reorder uses up/down steps, not drag: the notes grid is CSS masonry, so a drag target is visually ambiguous, while a step is deterministic, keyboard-reachable, and survives reflow (R-19).
+- Auto-purge trash after `TRASH_RETENTION_DAYS` (default 30, 0 disables): a personal database should not accumulate dead rows forever, and each trashed card shows the days left so nothing vanishes unannounced.
+- Multi-select with a fixed action bar: once a list is long, one-note-at-a-time trash/archive/label is busywork, so Select turns cards into checkboxes and the bar acts on all of them at once.
+- Keyboard shortcuts plus a `?` cheat sheet: `c`, `g` then `n/a/t`, `e`, `Delete`, `x` and `/` make the tool usable without the pointer, and a sidebar "Keyboard shortcuts" button plus the `?` key both open an in-app list so they stay findable (R-24, R-26).
+- PWA install with an offline app shell: a service worker caches the shell and hashed assets so the app still opens offline, but notes live in server-side SQLite, so offline shows a banner and refuses to pretend saves worked rather than faking a sync.
+

@@ -25,11 +25,18 @@ export function getDb(): Database.Database {
       archived   INTEGER NOT NULL DEFAULT 0,
       labels     TEXT    NOT NULL DEFAULT '[]',
       trashed_at INTEGER,
+      position   INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_notes_list ON notes (trashed_at, archived, pinned, updated_at);
   `);
+
+  // manual-order column added after the first release; migrate existing databases in place.
+  const cols = db.prepare("PRAGMA table_info(notes)").all() as { name: string }[];
+  if (!cols.some((c) => c.name === "position")) {
+    db.exec("ALTER TABLE notes ADD COLUMN position INTEGER NOT NULL DEFAULT 0");
+  }
 
   globalForDb.__noteDb = db;
   return db;

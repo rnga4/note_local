@@ -1,10 +1,10 @@
 import { getDb } from "./db";
-import type { Note, NoteInput, NotePatch, View } from "./types";
+import type { ImportedNote, Note, NoteInput, NotePatch, Sort, View } from "./types";
 
 type Row = {
   id: string; title: string; content: string; type: Note["type"]; items: string;
   color: Note["color"]; pinned: number; archived: number; labels: string;
-  trashed_at: number | null; created_at: number; updated_at: number;
+  trashed_at: number | null; position: number; created_at: number; updated_at: number;
 };
 
 const toNote = (r: Row): Note => ({
@@ -18,16 +18,30 @@ const toNote = (r: Row): Note => ({
   archived: r.archived === 1,
   labels: JSON.parse(r.labels) as string[],
   trashedAt: r.trashed_at,
+  position: r.position,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
+
+const DAY = 86_400_000;
+
+export function retentionDays(): number {
+  const v = Number(process.env.TRASH_RETENTION_DAYS);
+  return Number.isFinite(v) && v >= 0 ? v : 30;
+}
+
+export function purgeTrash(): number {
+  const days = retentionDays();
+  if (days <= 0) return 0;
+  return getDb().prepare("DELETE FROM notes WHERE trashed_at IS NOT NULL AND trashed_at < ?").run(Date.now() - days * DAY).changes;
+}
 
 export function getNote(id: string): Note | null {
   const r = getDb().prepare("SELECT * FROM notes WHERE id = ?").get(id) as Row | undefined;
   return r ? toNote(r) : null;
 }
 
-export function listNotes(view: View, q?: string, label?: string): Note[] {
+export function listNotes(view: View, q?: string, label?: string, sort: Sort = "updated"): Note[] {
   const where: string[] = [];
   const args: string[] = [];
 
@@ -44,7 +58,16 @@ export function listNotes(view: View, q?: string, label?: string): Note[] {
     args.push(label);
   }
 
-  const sql = `SELECT * FROM notes WHERE ${where.join(" AND ")} ORDER BY pinned DESC, updated_at DESC`;
+  const order =
+    sort === "created"
+      ? "pinned DESC, created_at DESC"
+      : sort === "title"
+        ? "pinned DESC, title COLLATE NOCASE ASC"
+        : sort === "manual"
+          ? "pinned DESC, position ASC, updated_at DESC"
+          : "pinned DESC, updated_at DESC";
+
+  const sql = `SELECT * FROM notes WHERE ${where.join(" AND ")} ORDER BY ${order}`;
   return (getDb().prepare(sql).all(...args) as Row[]).map(toNote);
 }
 
@@ -60,10 +83,10 @@ export function createNote(i: NoteInput): Note {
   const id = crypto.randomUUID();
   getDb()
     .prepare(
-      `INSERT INTO notes (id,title,content,type,items,color,pinned,archived,labels,created_at,updated_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO notes (id,title,content,type,items,color,pinned,archived,labels,position,created_at,updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
     )
-    .run(id, i.title, i.content, i.type, JSON.stringify(i.items), i.color, i.pinned ? 1 : 0, i.archived ? 1 : 0, JSON.stringify(i.labels), now, now);
+    .run(id, i.title, i.content, i.type, JSON.stringify(i.items), i.color, i.pinned ? 1 : 0, i.archived ? 1 : 0, JSON.stringify(i.labels), now, now, now);
   return getNote(id) as Note;
 }
 
@@ -105,6 +128,80 @@ export function emptyTrash(): number {
 
 export function trashCount(): number {
   return (getDb().prepare("SELECT COUNT(*) AS c FROM notes WHERE trashed_at IS NOT NULL").get() as { c: number }).c;
+}
+
+const relabel = (mutate: (labels: string[]) => string[] | null): number => {
+  const db = getDb();
+  const rows = db.prepare("SELECT id, labels FROM notes").all() as { id: string; labels: string }[];
+  const up = db.prepare("UPDATE notes SET labels = ? WHERE id = ?");
+  let n = 0;
+  db.transaction(() => {
+    for (const r of rows) {
+      const next = mutate(JSON.parse(r.labels) as string[]);
+      if (!next) continue;
+      up.run(JSON.stringify(next), r.id);
+      n++;
+    }
+  })();
+  return n;
+};
+
+export function renameLabel(from: string, to: string): number {
+  if (from === to) return 0;
+  return relabel((labels) => {
+    if (!labels.includes(from)) return null;
+    const next: string[] = [];
+    for (const l of labels) {
+      const v = l === from ? to : l;
+      if (!next.includes(v)) next.push(v);
+    }
+    return next;
+  });
+}
+
+export function deleteLabel(name: string): number {
+  return relabel((labels) => (labels.includes(name) ? labels.filter((l) => l !== name) : null));
+}
+
+export function reorderNotes(ids: string[]): number {
+  const db = getDb();
+  const up = db.prepare("UPDATE notes SET position = ? WHERE id = ?");
+  db.transaction(() => ids.forEach((id, i) => up.run(i, id)))();
+  return ids.length;
+}
+
+export function importNotes(notes: ImportedNote[]): { imported: number } {
+  const db = getDb();
+  const now = Date.now();
+  const stmt = db.prepare(
+    `INSERT INTO notes (id,title,content,type,items,color,pinned,archived,labels,trashed_at,position,created_at,updated_at)
+     VALUES (@id,@title,@content,@type,@items,@color,@pinned,@archived,@labels,@trashed_at,@position,@created_at,@updated_at)
+     ON CONFLICT(id) DO UPDATE SET
+       title=@title, content=@content, type=@type, items=@items, color=@color,
+       pinned=@pinned, archived=@archived, labels=@labels, trashed_at=@trashed_at,
+       position=@position, updated_at=@updated_at`,
+  );
+  const tx = db.transaction((list: ImportedNote[]) => {
+    for (const n of list) {
+      stmt.run({
+        id: n.id,
+        title: n.title,
+        content: n.content,
+        type: n.type,
+        items: JSON.stringify(n.items),
+        color: n.color,
+        pinned: n.pinned ? 1 : 0,
+        archived: n.archived ? 1 : 0,
+        labels: JSON.stringify(n.labels),
+        trashed_at: n.trashedAt ?? null,
+        position: n.position ?? 0,
+        created_at: n.createdAt ?? now,
+        updated_at: n.updatedAt ?? n.createdAt ?? now,
+      });
+    }
+  });
+  tx(notes);
+  return { imported: notes.length };
 }
 
 export function exportAllNotes(): Note[] {
