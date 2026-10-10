@@ -1,7 +1,19 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
+import {
+  cachedList,
+  cachedMeta,
+  cacheList,
+  cacheMeta,
+  enqueue,
+  getQueue,
+  pendingCount,
+  setQueue,
+  type Op,
+} from "@/lib/offline";
 import type { Note, NoteInput, NotePatch, Sort, View } from "@/lib/types";
+import { uid } from "@/lib/util";
 import { Composer } from "./Composer";
 import { MenuIcon } from "./icons";
 import { NoteCard } from "./NoteCard";
@@ -40,6 +52,8 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
   const gRef = useRef(false);
   const gTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [toast, setToast] = useState<{ id: number; msg: string; undo?: () => void } | null>(null);
+  const [offline, setOffline] = useState(false);
+  const [pending, setPending] = useState(0);
 
   useEffect(() => {
     notesRef.current = notes;
@@ -63,6 +77,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
   }, [sort]);
 
   const refresh = useCallback(async () => {
+    const key = `${view}|${label}|${sort}|${q}`;
     try {
       const [n, r] = await Promise.all([api.list(view, q, label, sort), api.labels()]);
       setNotes(n);
@@ -71,9 +86,26 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
       setRetentionDays(r.retentionDays);
       setLoadedScope(`${view}\u0000${label}`);
       setStatus("ready");
+      setOffline(false);
+      cacheList(key, n);
+      cacheMeta(r);
     } catch (e) {
-      console.error(e);
-      setStatus("error");
+      const cached = cachedList(key);
+      const meta = cachedMeta();
+      if (cached) {
+        setNotes(cached);
+        if (meta) {
+          setLabels(meta.labels);
+          setTrashCount(meta.trashedCount);
+          setRetentionDays(meta.retentionDays);
+        }
+        setLoadedScope(`${view}\u0000${label}`);
+        setStatus("ready");
+        setOffline(true);
+      } else {
+        console.error(e);
+        setStatus("error");
+      }
     }
   }, [view, q, label, sort]);
 
@@ -83,34 +115,121 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
     return () => clearTimeout(t);
   }, [refresh]);
 
-  const run = async (fn: () => Promise<unknown>) => {
+  const markPending = () => setPending(pendingCount());
+
+  // A mutation that fails because the server is unreachable is queued for later
+  // instead of being lost; the optimistic local state already reflects it.
+  const syncOrQueue = async (online: () => Promise<unknown>, op: Op) => {
     try {
-      await fn();
+      await online();
       await refresh();
-    } catch (e) {
-      console.error(e);
-      setStatus("error");
+    } catch {
+      enqueue(op);
+      markPending();
+      setOffline(true);
+      setToast({ id: Date.now(), msg: "Saved offline. It will sync when you reconnect." });
     }
   };
 
-  const create = (n: NoteInput) => run(() => api.create(n));
+  // Mirrors the server's list filtering so an offline change leaves the list correctly.
+  const visible = (n: Note): boolean => {
+    if (view === "trash") return Boolean(n.trashedAt);
+    if (n.trashedAt) return false;
+    if (view === "archive") return n.archived;
+    if (n.archived) return false;
+    if (label && !n.labels.includes(label)) return false;
+    if (q) {
+      const hay = `${n.title} ${n.content} ${n.items.map((i) => i.text).join(" ")}`.toLowerCase();
+      if (!hay.includes(q.toLowerCase())) return false;
+    }
+    return true;
+  };
+
+  const create = (n: NoteInput) => {
+    const now = Date.now();
+    const local: Note = { ...n, id: uid(), trashedAt: null, position: now, createdAt: now, updatedAt: now };
+    setNotes((ns) => [local, ...ns].filter(visible));
+    void syncOrQueue(() => api.create(n), { k: "upsert", note: local });
+  };
+
   const patch = async (id: string, p: NotePatch) => {
-    const prev = notesRef.current;
-    setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, ...p } : n)));
+    const target = notesRef.current.find((n) => n.id === id);
+    const { trashed, ...fields } = p;
+    const next: Note | null = target
+      ? {
+          ...target,
+          ...fields,
+          trashedAt: trashed === undefined ? target.trashedAt : trashed ? Date.now() : null,
+        }
+      : null;
+    setNotes((ns) => {
+      const mapped = ns.map((n) =>
+        n.id === id ? { ...n, ...fields, trashedAt: next?.trashedAt ?? n.trashedAt } : n,
+      );
+      // online, let the card finish its leave animation before refresh re-filters
+      return navigator.onLine ? mapped : mapped.filter(visible);
+    });
     if (p.trashed === true) {
       setToast({ id: Date.now(), msg: "Note moved to trash", undo: () => void patch(id, { trashed: false }) });
     }
     try {
       await api.patch(id, p);
       await refresh();
-    } catch (e) {
-      console.error(e);
-      setNotes(prev);
-      setStatus("error");
+    } catch {
+      if (next) {
+        enqueue({ k: "upsert", note: next });
+        markPending();
+      }
+      setOffline(true);
     }
   };
-  const remove = (id: string) => run(() => api.remove(id));
-  const emptyTrash = () => run(() => api.emptyTrash());
+
+  const remove = (id: string) => {
+    setNotes((ns) => ns.filter((n) => n.id !== id));
+    void syncOrQueue(() => api.remove(id), { k: "remove", id });
+  };
+
+  const emptyTrash = () => {
+    if (view === "trash") setNotes([]);
+    setTrashCount(0);
+    void syncOrQueue(() => api.emptyTrash(), { k: "emptyTrash" });
+  };
+
+  const flushQueue = useCallback(async () => {
+    const queue = getQueue();
+    for (const op of queue) {
+      if (op.k === "upsert") await api.importJson([op.note]);
+      else if (op.k === "remove") await api.remove(op.id);
+      else await api.emptyTrash();
+    }
+    if (queue.length) {
+      setQueue([]);
+      markPending();
+    }
+  }, []);
+
+  useEffect(() => {
+    const onOnline = () => {
+      void (async () => {
+        try {
+          await flushQueue();
+        } catch {
+          // still unreachable; the queue stays and we retry on the next online event
+        }
+        await refresh();
+      })();
+    };
+    const onOffline = () => setOffline(true);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    setPending(pendingCount());
+    if (!navigator.onLine) setOffline(true);
+    else if (pendingCount() > 0) onOnline();
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, [flushQueue, refresh]);
 
   const openEditor = (n: Note) => {
     if (view === "trash") return;
@@ -514,6 +633,17 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
           </div>
         </div>
       </header>
+
+      {offline && (
+        <div
+          role="status"
+          className="border-b-2 border-[var(--border)] bg-[var(--accent)] px-4 py-2 text-center text-sm font-bold text-[var(--accent-ink)]"
+        >
+          {pending > 0
+            ? `Offline. ${pending} change${pending === 1 ? "" : "s"} will sync when you reconnect.`
+            : "Offline. Showing saved notes."}
+        </div>
+      )}
 
       <div className="flex">
         <Sidebar {...navProps} />
