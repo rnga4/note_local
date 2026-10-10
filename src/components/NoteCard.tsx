@@ -2,6 +2,7 @@
 import { useState, type CSSProperties } from "react";
 import { noteClass } from "@/lib/colors";
 import type { Note, NotePatch, Sort, View } from "@/lib/types";
+import { Highlight } from "./Highlight";
 import { ArchiveIcon, ArrowDownIcon, ArrowUpIcon, CheckIcon, EditIcon, PinIcon, RestoreIcon, TrashIcon } from "./icons";
 
 const DAY = 86_400_000;
@@ -16,6 +17,7 @@ type Props = {
   manualFirst?: boolean;
   manualLast?: boolean;
   retentionDays?: number;
+  query?: string;
   onOpen: (n: Note) => void;
   onPatch: (id: string, p: NotePatch) => void;
   onDelete: (id: string) => void;
@@ -36,6 +38,7 @@ export function NoteCard({
   manualFirst = false,
   manualLast = false,
   retentionDays = 0,
+  query,
   onOpen,
   onPatch,
   onDelete,
@@ -96,10 +99,16 @@ export function NoteCard({
           selecting ? "pl-8" : ""
         }`}
       >
-        {note.title && <span className="mb-1 block font-bold">{note.title}</span>}
+        {note.title && (
+          <span className="mb-1 block font-bold">
+            <Highlight text={note.title} query={query} />
+          </span>
+        )}
         {showUntitled && <span className="mb-1 block text-sm font-medium text-[var(--muted)]">Untitled</span>}
         {note.type === "text" && note.content && (
-          <span className="line-clamp-12 whitespace-pre-wrap text-sm">{note.content}</span>
+          <span className="line-clamp-12 whitespace-pre-wrap text-sm">
+            <Highlight text={note.content} query={query} />
+          </span>
         )}
       </button>
 
@@ -110,7 +119,9 @@ export function NoteCard({
               {selecting ? (
                 <span className="flex min-h-11 items-center gap-2 pl-8 text-sm">
                   <span className={`h-4 w-4 shrink-0 border-2 border-[var(--border)] ${i.done ? "bg-[var(--text)]" : ""}`} />
-                  <span className={i.done ? "text-[var(--muted)] line-through" : ""}>{i.text}</span>
+                  <span className={i.done ? "text-[var(--muted)] line-through" : ""}>
+                    <Highlight text={i.text} query={query} />
+                  </span>
                 </span>
               ) : (
                 <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm">
@@ -120,7 +131,9 @@ export function NoteCard({
                     onChange={() => toggle(i.id)}
                     className="h-4 w-4 shrink-0"
                   />
-                  <span className={i.done ? "text-[var(--muted)] line-through" : ""}>{i.text}</span>
+                  <span className={i.done ? "text-[var(--muted)] line-through" : ""}>
+                    <Highlight text={i.text} query={query} />
+                  </span>
                 </label>
               )}
             </li>

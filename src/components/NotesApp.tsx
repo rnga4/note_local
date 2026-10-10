@@ -360,6 +360,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
           manualFirst={sort === "manual" && view !== "trash" && idx === 0}
           manualLast={sort === "manual" && view !== "trash" && idx === list.length - 1}
           retentionDays={retentionDays}
+          query={q}
           onOpen={openEditor}
           onPatch={patch}
           onDelete={remove}

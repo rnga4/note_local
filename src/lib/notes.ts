@@ -41,6 +41,17 @@ export function getNote(id: string): Note | null {
   return r ? toNote(r) : null;
 }
 
+// Quote each term so arbitrary input cannot break the MATCH grammar, and add a
+// prefix wildcard so "cat" also finds "category".
+function ftsQuery(q: string): string | null {
+  const terms = q
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => `"${t.replace(/"/g, '""')}"*`);
+  return terms.length ? terms.join(" ") : null;
+}
+
 export function listNotes(view: View, q?: string, label?: string, sort: Sort = "updated"): Note[] {
   const where: string[] = [];
   const args: string[] = [];
@@ -49,9 +60,15 @@ export function listNotes(view: View, q?: string, label?: string, sort: Sort = "
   else where.push("trashed_at IS NULL", view === "archive" ? "archived = 1" : "archived = 0");
 
   if (q) {
-    const like = `%${q}%`;
-    where.push("(title LIKE ? OR content LIKE ? OR items LIKE ?)");
-    args.push(like, like, like);
+    const match = ftsQuery(q);
+    if (match) {
+      where.push("rowid IN (SELECT rowid FROM notes_fts WHERE notes_fts MATCH ?)");
+      args.push(match);
+    } else {
+      const like = `%${q}%`;
+      where.push("(title LIKE ? OR content LIKE ? OR items LIKE ?)");
+      args.push(like, like, like);
+    }
   }
   if (label) {
     where.push("EXISTS (SELECT 1 FROM json_each(notes.labels) WHERE value = ?)");
