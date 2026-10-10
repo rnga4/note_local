@@ -3,7 +3,7 @@ import type { ImportedNote, Note, NoteInput, NotePatch, Sort, View } from "./typ
 
 type Row = {
   id: string; title: string; content: string; type: Note["type"]; items: string;
-  color: Note["color"]; pinned: number; archived: number; labels: string;
+  images: string; color: Note["color"]; pinned: number; archived: number; labels: string;
   trashed_at: number | null; position: number; created_at: number; updated_at: number;
 };
 
@@ -13,6 +13,7 @@ const toNote = (r: Row): Note => ({
   content: r.content,
   type: r.type,
   items: JSON.parse(r.items) as Note["items"],
+  images: JSON.parse(r.images ?? "[]") as Note["images"],
   color: r.color,
   pinned: r.pinned === 1,
   archived: r.archived === 1,
@@ -100,10 +101,10 @@ export function createNote(i: NoteInput): Note {
   const id = crypto.randomUUID();
   getDb()
     .prepare(
-      `INSERT INTO notes (id,title,content,type,items,color,pinned,archived,labels,position,created_at,updated_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO notes (id,title,content,type,items,images,color,pinned,archived,labels,position,created_at,updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     )
-    .run(id, i.title, i.content, i.type, JSON.stringify(i.items), i.color, i.pinned ? 1 : 0, i.archived ? 1 : 0, JSON.stringify(i.labels), now, now, now);
+    .run(id, i.title, i.content, i.type, JSON.stringify(i.items), JSON.stringify(i.images), i.color, i.pinned ? 1 : 0, i.archived ? 1 : 0, JSON.stringify(i.labels), now, now, now);
   return getNote(id) as Note;
 }
 
@@ -116,7 +117,7 @@ export function updateNote(id: string, p: NotePatch): Note | null {
 
   getDb()
     .prepare(
-      `UPDATE notes SET title=?, content=?, type=?, items=?, color=?, pinned=?, archived=?, labels=?, trashed_at=?, updated_at=?
+      `UPDATE notes SET title=?, content=?, type=?, items=?, images=?, color=?, pinned=?, archived=?, labels=?, trashed_at=?, updated_at=?
        WHERE id=?`,
     )
     .run(
@@ -124,6 +125,7 @@ export function updateNote(id: string, p: NotePatch): Note | null {
       p.content ?? cur.content,
       p.type ?? cur.type,
       JSON.stringify(p.items ?? cur.items),
+      JSON.stringify(p.images ?? cur.images),
       p.color ?? cur.color,
       (p.pinned ?? cur.pinned) ? 1 : 0,
       (p.archived ?? cur.archived) ? 1 : 0,
@@ -191,10 +193,10 @@ export function importNotes(notes: ImportedNote[]): { imported: number } {
   const db = getDb();
   const now = Date.now();
   const stmt = db.prepare(
-    `INSERT INTO notes (id,title,content,type,items,color,pinned,archived,labels,trashed_at,position,created_at,updated_at)
-     VALUES (@id,@title,@content,@type,@items,@color,@pinned,@archived,@labels,@trashed_at,@position,@created_at,@updated_at)
+    `INSERT INTO notes (id,title,content,type,items,images,color,pinned,archived,labels,trashed_at,position,created_at,updated_at)
+     VALUES (@id,@title,@content,@type,@items,@images,@color,@pinned,@archived,@labels,@trashed_at,@position,@created_at,@updated_at)
      ON CONFLICT(id) DO UPDATE SET
-       title=@title, content=@content, type=@type, items=@items, color=@color,
+       title=@title, content=@content, type=@type, items=@items, images=@images, color=@color,
        pinned=@pinned, archived=@archived, labels=@labels, trashed_at=@trashed_at,
        position=@position, updated_at=@updated_at`,
   );
@@ -206,6 +208,7 @@ export function importNotes(notes: ImportedNote[]): { imported: number } {
         content: n.content,
         type: n.type,
         items: JSON.stringify(n.items),
+        images: JSON.stringify(n.images),
         color: n.color,
         pinned: n.pinned ? 1 : 0,
         archived: n.archived ? 1 : 0,

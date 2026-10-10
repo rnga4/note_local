@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { noteClass } from "@/lib/colors";
+import { collectImages } from "@/lib/image";
 import { type NoteInput, COLORS } from "@/lib/types";
 import { toItems, toText } from "@/lib/util";
 import { ChecklistEditor } from "./ChecklistEditor";
 import { ColorPicker } from "./ColorPicker";
-import { PinIcon } from "./icons";
+import { ImageStrip } from "./ImageStrip";
+import { ImageIcon, PinIcon } from "./icons";
 
-const EMPTY: NoteInput = { title: "", content: "", type: "text", items: [], color: "default", pinned: false, archived: false, labels: [] };
+const EMPTY: NoteInput = { title: "", content: "", type: "text", items: [], images: [], color: "default", pinned: false, archived: false, labels: [] };
 const DRAFT_KEY = "note-composer-draft";
 
 function readDraft(): NoteInput | null {
@@ -42,7 +44,14 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
   const [open, setOpen] = useState(false);
   const patch = (p: Partial<NoteInput>) => setDraft((d) => ({ ...d, ...p }));
 
-  const hasContent = Boolean(draft.title.trim() || draft.content.trim() || draft.items.length);
+  const hasContent = Boolean(
+    draft.title.trim() || draft.content.trim() || draft.items.length || draft.images.length,
+  );
+
+  const addImages = async (files: Iterable<File>) => {
+    const picked = await collectImages(files);
+    if (picked.length) patch({ images: [...draft.images, ...picked].slice(0, 8) });
+  };
 
   useEffect(() => {
     const d = readDraft();
@@ -112,7 +121,16 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
   }
 
   return (
-    <div className={`nb mx-auto mb-6 max-w-xl p-3 ${noteClass(draft.color)}`}>
+    <div
+      className={`nb mx-auto mb-6 max-w-xl p-3 ${noteClass(draft.color)}`}
+      onPaste={(e) => {
+        const files = Array.from(e.clipboardData.files);
+        if (files.length) {
+          e.preventDefault();
+          void addImages(files);
+        }
+      }}
+    >
       <input
         autoFocus
         value={draft.title}
@@ -133,9 +151,27 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
       ) : (
         <ChecklistEditor items={draft.items} onChange={(items) => patch({ items })} />
       )}
+      <ImageStrip
+        images={draft.images}
+        onRemove={(i) => patch({ images: draft.images.filter((_, x) => x !== i) })}
+      />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-1">
         <ColorPicker value={draft.color} onChange={(color) => patch({ color })} />
         <div className="flex flex-wrap items-center gap-1">
+          <label className="nb-btn flex min-h-11 cursor-pointer items-center gap-2 px-3 text-sm font-bold text-[var(--text)]">
+            <ImageIcon />
+            Image
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files) void addImages(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
           <button
             type="button"
             aria-label="Pin note"

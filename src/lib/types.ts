@@ -13,6 +13,10 @@ export const NoteInput = z.object({
   content: z.string().max(100_000).default(""),
   type: z.enum(["text", "list"]).default("text"),
   items: z.array(ChecklistItem).max(500).default([]),
+  images: z
+    .array(z.string().max(3_000_000).refine((s) => s.startsWith("data:image/"), "not an image"))
+    .max(8)
+    .default([]),
   color: z.enum(COLORS).default("default"),
   pinned: z.boolean().default(false),
   archived: z.boolean().default(false),

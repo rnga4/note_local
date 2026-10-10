@@ -110,6 +110,24 @@ export function NoteCard({
             <Highlight text={note.content} query={query} />
           </span>
         )}
+        {note.images.length > 0 && (
+          <span className="mt-2 flex flex-wrap gap-1">
+            {note.images.slice(0, 4).map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt=""
+                loading="lazy"
+                className="h-20 w-20 border-2 border-[var(--border)] object-cover"
+              />
+            ))}
+            {note.images.length > 4 && (
+              <span className="grid h-20 w-20 place-items-center border-2 border-[var(--border)] text-xs font-bold">
+                +{note.images.length - 4}
+              </span>
+            )}
+          </span>
+        )}
       </button>
 
       {note.type === "list" && (

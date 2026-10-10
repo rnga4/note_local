@@ -24,6 +24,7 @@ export function getDb(): Database.Database {
       pinned     INTEGER NOT NULL DEFAULT 0,
       archived   INTEGER NOT NULL DEFAULT 0,
       labels     TEXT    NOT NULL DEFAULT '[]',
+      images     TEXT    NOT NULL DEFAULT '[]',
       trashed_at INTEGER,
       position   INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL,
@@ -36,6 +37,9 @@ export function getDb(): Database.Database {
   const cols = db.prepare("PRAGMA table_info(notes)").all() as { name: string }[];
   if (!cols.some((c) => c.name === "position")) {
     db.exec("ALTER TABLE notes ADD COLUMN position INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!cols.some((c) => c.name === "images")) {
+    db.exec("ALTER TABLE notes ADD COLUMN images TEXT NOT NULL DEFAULT '[]'");
   }
 
   // External-content FTS index so search ranks phrases instead of scanning LIKE.

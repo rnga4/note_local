@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { noteClass } from "@/lib/colors";
+import { collectImages } from "@/lib/image";
 import type { Note, NotePatch } from "@/lib/types";
 import { ChecklistEditor } from "./ChecklistEditor";
 import { ColorPicker } from "./ColorPicker";
-import { CloseIcon } from "./icons";
+import { ImageStrip } from "./ImageStrip";
+import { CloseIcon, ImageIcon } from "./icons";
 
 type Props = { note: Note; onSave: (id: string, p: NotePatch) => void; onClose: () => void };
 
@@ -26,11 +28,17 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
       title: d.title,
       content: d.content,
       items: d.items,
+      images: d.images,
       color: d.color,
       labels: d.labels,
       pinned: d.pinned,
     });
     close();
+  };
+
+  const addImages = async (files: Iterable<File>) => {
+    const picked = await collectImages(files);
+    if (picked.length) patch({ images: [...d.images, ...picked].slice(0, 8) });
   };
 
   useEffect(() => {
@@ -83,6 +91,13 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
         aria-modal="true"
         aria-label="Edit note"
         onClick={(e) => e.stopPropagation()}
+        onPaste={(e) => {
+          const files = Array.from(e.clipboardData.files);
+          if (files.length) {
+            e.preventDefault();
+            void addImages(files);
+          }
+        }}
         className={`nb ${closing ? "exit-sheet" : "enter-sheet"} my-auto w-full max-w-xl p-4 ${noteClass(d.color)} max-h-[calc(100dvh-2rem)] overflow-y-auto`}
       >
         <input
@@ -103,6 +118,8 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
         ) : (
           <ChecklistEditor items={d.items} onChange={(items) => patch({ items })} />
         )}
+
+        <ImageStrip images={d.images} onRemove={(i) => patch({ images: d.images.filter((_, x) => x !== i) })} />
 
         <div className="mt-3 flex flex-wrap items-center gap-1">
           {d.labels.map((l) => (
@@ -133,13 +150,29 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
           <ColorPicker value={d.color} onChange={(color) => patch({ color })} />
-          <button
-            type="button"
-            onClick={save}
-            className="nb-btn min-h-11 bg-[var(--accent)] px-4 text-sm font-bold text-[var(--accent-ink)]"
-          >
-            Save
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="nb-btn flex min-h-11 cursor-pointer items-center gap-2 px-3 text-sm font-bold text-[var(--text)]">
+              <ImageIcon />
+              Image
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files) void addImages(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={save}
+              className="nb-btn min-h-11 bg-[var(--accent)] px-4 text-sm font-bold text-[var(--accent-ink)]"
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>

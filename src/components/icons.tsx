@@ -117,3 +117,13 @@ export function CheckIcon({ className }: IconProps) {
     </Svg>
   );
 }
+
+export function ImageIcon({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1" />
+      <path d="M3.5 15.5l4.5-4.5 3.5 3.5 3-3 5 5" />
+      <circle cx="9" cy="9" r="1.2" />
+    </Svg>
+  );
+}
