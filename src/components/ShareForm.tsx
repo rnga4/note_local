@@ -40,7 +40,7 @@ export function ShareForm({ title, text, url }: { title: string; text: string; u
         onChange={(e) => setT(e.target.value)}
         placeholder="Title"
         aria-label="Title"
-        className="mb-2 min-h-11 w-full border-2 border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-bold placeholder:text-[var(--muted)]"
+        className="ink mb-2 min-h-11 w-full bg-[var(--surface)] px-3 text-sm font-bold placeholder:text-[var(--muted)]"
       />
       <textarea
         value={c}
@@ -48,7 +48,7 @@ export function ShareForm({ title, text, url }: { title: string; text: string; u
         rows={6}
         placeholder="Content"
         aria-label="Content"
-        className="w-full resize-none border-2 border-[var(--border)] bg-[var(--surface)] p-3 text-sm placeholder:text-[var(--muted)]"
+        className="ink w-full resize-none bg-[var(--surface)] p-3 text-sm placeholder:text-[var(--muted)]"
       />
       <div className="mt-3 flex items-center justify-end gap-2">
         <button

@@ -18,6 +18,18 @@
   --shadow: #000000;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Skin shape tokens. The neobrutalist default: thick ink, square, hard offset. */
+  --bw: 2px;
+  --line: 2px;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-xs: 0px;
+  --sh: 4px 4px 0 0 var(--shadow);
+  --sh-btn: 3px 3px 0 0 var(--shadow);
+  --sh-btn-hover: 5px 5px 0 0 var(--shadow);
+  --sh-card-hover: 6px 6px 0 0 var(--shadow);
+  --state: transparent;
+  --state-strong: transparent;
 }
 
 .dark {
@@ -35,6 +47,107 @@
   --ring: #ffffff;
   --scrim: rgb(0 0 0 / 0.7);
   --shadow: #ffffff;
+}
+
+/* Modern minimal (Material): soft elevation, generous rounding, flat state layer. */
+.skin-material {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #eceef1;
+  --text: #1c1b1f;
+  --muted: #49454f;
+  --border: #dad8df;
+  --border-strong: #79747e;
+  --accent: #6750a4;
+  --accent-ink: #ffffff;
+  --hover: rgb(28 27 31 / 0.06);
+  --ring: #6750a4;
+  --scrim: rgb(0 0 0 / 0.4);
+  --shadow: rgb(0 0 0 / 0.18);
+  --bw: 1px;
+  --line: 1px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 4px;
+  --sh: 0 1px 2px rgb(0 0 0 / 0.07), 0 1px 3px 1px rgb(0 0 0 / 0.06);
+  --sh-btn: none;
+  --sh-btn-hover: 0 1px 2px rgb(0 0 0 / 0.1), 0 1px 3px 1px rgb(0 0 0 / 0.08);
+  --sh-card-hover: 0 2px 6px rgb(0 0 0 / 0.12), 0 1px 3px rgb(0 0 0 / 0.08);
+  --state: rgb(28 27 31 / 0.08);
+  --state-strong: rgb(28 27 31 / 0.12);
+}
+
+.skin-material.dark {
+  color-scheme: dark;
+  --bg: #141218;
+  --surface: #1d1b20;
+  --surface-2: #2b2930;
+  --text: #e6e1e5;
+  --muted: #cac4d0;
+  --border: #3a3740;
+  --border-strong: #938f99;
+  --accent: #d0bcff;
+  --accent-ink: #381e72;
+  --hover: rgb(230 225 229 / 0.08);
+  --ring: #d0bcff;
+  --scrim: rgb(0 0 0 / 0.6);
+  --shadow: rgb(0 0 0 / 0.5);
+  --sh: 0 1px 2px rgb(0 0 0 / 0.5), 0 1px 3px 1px rgb(0 0 0 / 0.35);
+  --sh-btn-hover: 0 1px 2px rgb(0 0 0 / 0.6), 0 1px 3px 1px rgb(0 0 0 / 0.4);
+  --sh-card-hover: 0 2px 6px rgb(0 0 0 / 0.55), 0 1px 3px rgb(0 0 0 / 0.4);
+  --state: rgb(230 225 229 / 0.1);
+  --state-strong: rgb(230 225 229 / 0.16);
+}
+
+/* iOS: grouped canvas, hairline separators, system blue, translucent tint. */
+.skin-ios {
+  color-scheme: light;
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --surface-2: #ececf0;
+  --text: #000000;
+  --muted: #6b6b70;
+  --border: #d1d1d6;
+  --border-strong: #8e8e93;
+  --accent: #0071e3;
+  --accent-ink: #ffffff;
+  --hover: rgb(120 120 128 / 0.12);
+  --ring: #0071e3;
+  --scrim: rgb(0 0 0 / 0.4);
+  --shadow: rgb(0 0 0 / 0.15);
+  --bw: 1px;
+  --line: 1px;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 5px;
+  --sh: 0 1px 2px rgb(0 0 0 / 0.05), 0 4px 12px rgb(0 0 0 / 0.05);
+  --sh-btn: none;
+  --sh-btn-hover: none;
+  --sh-card-hover: 0 4px 14px rgb(0 0 0 / 0.1);
+  --state: rgb(120 120 128 / 0.16);
+  --state-strong: rgb(120 120 128 / 0.24);
+}
+
+.skin-ios.dark {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-2: #2c2c2e;
+  --text: #ffffff;
+  --muted: #98989f;
+  --border: #38383a;
+  --border-strong: #636366;
+  --accent: #0b6be0;
+  --accent-ink: #ffffff;
+  --hover: rgb(120 120 128 / 0.24);
+  --ring: #0a84ff;
+  --scrim: rgb(0 0 0 / 0.6);
+  --shadow: rgb(0 0 0 / 0.6);
+  --sh: 0 1px 2px rgb(0 0 0 / 0.5);
+  --sh-card-hover: 0 4px 14px rgb(0 0 0 / 0.5);
+  --state: rgb(120 120 128 / 0.24);
+  --state-strong: rgb(120 120 128 / 0.32);
 }
 
 body {
@@ -60,23 +173,26 @@ input[type="checkbox"] {
 }
 
 @layer components {
-  /* Identity motif (DESIGN.md): 2px ink border plus a hard offset shadow, no blur. */
+  /* Surface primitive. The neobrutalist default (DESIGN.md): 2px ink border plus a
+     hard offset shadow, no blur. The material and iOS skins restyle it below. */
   .nb {
-    border: 2px solid var(--border);
+    border: var(--bw) solid var(--border);
+    border-radius: var(--radius);
     background-color: var(--surface);
-    box-shadow: 4px 4px 0 0 var(--shadow);
+    box-shadow: var(--sh);
   }
 
   .nb-btn {
-    border: 2px solid var(--border);
+    border: var(--bw) solid var(--border);
+    border-radius: var(--radius-sm);
     background-color: var(--surface);
-    box-shadow: 3px 3px 0 0 var(--shadow);
+    box-shadow: var(--sh-btn);
     transition: transform 120ms var(--ease), box-shadow 120ms var(--ease),
       background-color 150ms var(--ease), color 150ms var(--ease);
   }
   .nb-btn:hover {
     transform: translate(-1px, -1px);
-    box-shadow: 5px 5px 0 0 var(--shadow);
+    box-shadow: var(--sh-btn-hover);
   }
   .nb-btn:active {
     transform: translate(3px, 3px);
@@ -87,7 +203,7 @@ input[type="checkbox"] {
   }
   .nb-btn:disabled:hover {
     transform: none;
-    box-shadow: 3px 3px 0 0 var(--shadow);
+    box-shadow: var(--sh-btn);
   }
 
   /* MOTION 3 (DESIGN.md): a note is a physical block the pointer picks up. */
@@ -96,7 +212,50 @@ input[type="checkbox"] {
   }
   .nb-card:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 var(--shadow);
+    box-shadow: var(--sh-card-hover);
+  }
+
+  /* Inline ink: a bordered control, badge, or divider that follows the skin. */
+  .ink {
+    border: var(--bw) solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .ink-xs {
+    border: var(--bw) solid var(--border);
+    border-radius: var(--radius-xs);
+  }
+  .ink-t {
+    border-top: var(--line) solid var(--border);
+  }
+  .ink-b {
+    border-bottom: var(--line) solid var(--border);
+  }
+  .ink-r {
+    border-right: var(--line) solid var(--border);
+  }
+  .ink-l {
+    border-left: var(--line) solid var(--border);
+  }
+
+  /* Modern and iOS: flat state layer on top of any fill instead of the pick-up. */
+  .skin-material .nb-btn:hover,
+  .skin-ios .nb-btn:hover {
+    transform: none;
+    box-shadow: inset 0 0 0 999px var(--state);
+  }
+  .skin-material .nb-btn:active,
+  .skin-ios .nb-btn:active {
+    transform: none;
+    box-shadow: inset 0 0 0 999px var(--state-strong);
+  }
+  .skin-material .nb-btn:disabled:hover,
+  .skin-ios .nb-btn:disabled:hover {
+    box-shadow: var(--sh-btn);
+  }
+  .skin-material .nb-card:hover,
+  .skin-ios .nb-card:hover {
+    transform: none;
+    box-shadow: var(--sh-card-hover);
   }
 
   .note {

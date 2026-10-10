@@ -37,7 +37,7 @@ The system font stack, pushed to heavy weights. Reason: a local tool should rend
 
 ## Theme
 
-Both light and dark ship and both must work. Dark is the same idea inverted: white ink on near-black paper. The toggle is real, the choice persists, and there is no default forced by markup.
+Three skins ship: Neobrutalism (the default), a Modern minimal Material skin, and an iOS skin. Each skin carries its own light and dark mode, so six combinations exist and every one must work. A skin swaps the shape tokens (border width, corner radius, shadow) and the palette; the neobrutalist ink block stays the fallback and the thing the app is recognized by. The choice and the mode persist in `localStorage` and are applied before paint.
 
 ## Language
 
@@ -99,4 +99,8 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - Offline writes queue instead of failing: a change that cannot reach the server is kept optimistically in the list and replayed on reconnect, because a local-first tool that loses a note typed on the train is not trustworthy.
 - Custom right-click menu on note cards: the native browser menu is replaced with the app's own (Open, pin, archive, trash, copy text, color, labels), so a desktop user reaches a card's actions where the pointer already is; it stays keyboard-operable (Shift+F10, arrow keys, Escape) rather than disabling right-click outright.
 - A picture opens in a full-screen viewer: a thumbnail is content the user wants to actually see, so clicking it shows the image large with prev/next, a counter, and arrow keys, instead of only opening the editor; the viewer layers above the editor and the right-click menu, so Escape closes one layer at a time.
+- Three skins, one structure (owner request, 2026-10-10): Neobrutalism stays the default and the identity, with a Modern minimal Material skin and an iOS skin beside it. A skin is a token swap, not a fork, so shape was broken out into `--bw`, `--line`, `--radius`, `--radius-sm`, `--radius-xs`, and the shadow values, and every inline border moved onto `.nb` / `.ink` / `.ink-t|b|r|l` classes that read those tokens.
+- Each skin brings its own accent and every pairing clears 4.5:1 for normal text: Neobrutalism keeps electric yellow `#ffe600` on black; Modern uses Material primary `#6750a4` on white (light) and `#d0bcff` on `#381e72` (dark); iOS uses system blue `#0071e3` (light) and a darker `#0b6be0` (dark) so white button labels pass instead of the 3.6:1 that stock `#007aff` gives.
+- Modern and iOS drop the pick-up interaction for a flat state layer: an inset translucent tint on hover/active and a soft blurred shadow, because moving the block into a hard offset shadow reads as neobrutalist and would fight the skin.
+- Appearance is one sidebar control that opens a skin plus light/dark picker: the old single light/dark button could not express six states, and the panel is keyboard-operable (arrow-scoped radio groups, Escape and outside-click to close) rather than a native `select` that hides the options.
 

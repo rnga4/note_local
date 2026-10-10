@@ -104,7 +104,7 @@ export function Lightbox({ images, start = 0, label = "Image", onClose }: Props)
           </button>
           <span
             aria-live="polite"
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 border-2 border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-sm font-bold text-[var(--text)]"
+            className="nb absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 text-sm font-bold text-[var(--text)]"
           >
             {index + 1} / {n}
           </span>
@@ -116,7 +116,7 @@ export function Lightbox({ images, start = 0, label = "Image", onClose }: Props)
         src={images[index]}
         alt={`Image ${index + 1} of ${n}`}
         onClick={onClose}
-        className="max-h-[85vh] max-w-[90vw] border-2 border-[var(--border)] object-contain shadow-[4px_4px_0_0_var(--shadow)]"
+        className="nb max-h-[85vh] max-w-[90vw] object-contain"
       />
     </div>,
     document.body,

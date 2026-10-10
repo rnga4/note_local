@@ -36,7 +36,7 @@ const ITEM =
   "flex w-full min-h-11 items-center gap-3 px-3 text-left text-sm font-bold text-[var(--text)] " +
   "hover:bg-[var(--hover)] focus:bg-[var(--hover)] focus:outline-none disabled:opacity-40 disabled:hover:bg-transparent";
 
-const PANEL = "border-2 border-[var(--border)] bg-[var(--surface)] py-1 shadow-[4px_4px_0_0_var(--shadow)]";
+const PANEL = "nb py-1";
 
 function role(item: MenuAction) {
   if (item.checkRole === "radio") return "menuitemradio";
@@ -165,7 +165,7 @@ export function ContextMenu({ x, y, items, label, onClose, returnFocusTo }: Prop
 
   const rows = (list: MenuAction[]) =>
     list.map((item) => {
-      const sep = item.separatorBefore ? <div role="separator" className="my-1 border-t-2 border-[var(--border)]" /> : null;
+      const sep = item.separatorBefore ? <div role="separator" className="ink-t my-1" /> : null;
       if (item.submenu) {
         const open = sub === item.key;
         return (

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useState, type ChangeEvent, type FormEvent } from "react";
 import type { Sort, View } from "@/lib/types";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeMenu } from "./ThemeMenu";
 import { CheckIcon, EditIcon, TrashIcon } from "./icons";
 
 type Props = {
@@ -195,7 +195,7 @@ export function NavList({
         </select>
       </div>
 
-      <ThemeToggle className="mt-3" />
+      <ThemeMenu />
 
       <label className="mt-1 flex min-h-11 cursor-pointer items-center px-3 text-left text-sm font-medium text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]">
         Import backup
@@ -214,7 +214,7 @@ export function NavList({
         className="flex min-h-11 items-center justify-between px-3 text-left text-sm font-medium text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
       >
         Keyboard shortcuts
-        <kbd className="rounded border-2 border-[var(--border)] px-1 text-xs font-bold text-[var(--muted)]">?</kbd>
+        <kbd className="ink bg-[var(--surface-2)] px-1 text-xs font-bold text-[var(--muted)]">?</kbd>
       </button>
       {authEnabled && (
         <button
@@ -231,7 +231,7 @@ export function NavList({
 
 export function Sidebar(props: Props) {
   return (
-    <aside className="hidden w-56 shrink-0 border-r-2 border-[var(--border)] py-3 md:block">
+    <aside className="ink-r hidden w-56 shrink-0 py-3 md:block">
       <NavList {...props} />
     </aside>
   );

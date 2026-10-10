@@ -589,7 +589,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b-2 border-[var(--border)] bg-[var(--bg)]">
+      <header className="ink-b sticky top-0 z-40 bg-[var(--bg)]">
         <div className="flex items-center gap-2 px-2 py-1.5 md:gap-4 md:px-4 md:py-2">
           <button
             ref={menuBtnRef}
@@ -639,7 +639,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
           }`}
         >
           <div className="min-h-0 overflow-hidden">
-            <div className="border-t-2 border-[var(--border)] px-2 py-2">
+            <div className="ink-t px-2 py-2">
               <NavList {...navProps} />
             </div>
           </div>
@@ -649,7 +649,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
       {offline && (
         <div
           role="status"
-          className="border-b-2 border-[var(--border)] bg-[var(--accent)] px-4 py-2 text-center text-sm font-bold text-[var(--accent-ink)]"
+          className="ink-b bg-[var(--accent)] px-4 py-2 text-center text-sm font-bold text-[var(--accent-ink)]"
         >
           {pending > 0
             ? `Offline. ${pending} change${pending === 1 ? "" : "s"} will sync when you reconnect.`
@@ -669,7 +669,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
       {helpOpen && <ShortcutsHelp onClose={() => setHelpOpen(false)} />}
 
       {selecting && (
-        <div className="fixed inset-x-0 bottom-0 z-40 max-h-[45vh] overflow-y-auto border-t-2 border-[var(--border)] bg-[var(--surface)] p-2">
+        <div className="ink-t fixed inset-x-0 bottom-0 z-40 max-h-[45vh] overflow-y-auto bg-[var(--surface)] p-2">
           <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-2">
             <span className="px-1 text-sm font-black">{selected.size} selected</span>
             <button type="button" onClick={selectAll} className={bulkBtn}>
@@ -699,7 +699,7 @@ export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
                           e.currentTarget.value = "";
                         }
                       }}
-                      className="min-h-9 w-24 min-w-0 border-2 border-[var(--border)] bg-[var(--bg)] px-2 text-sm font-normal placeholder:text-[var(--muted)]"
+                      className="ink min-h-9 w-24 min-w-0 bg-[var(--bg)] px-2 text-sm font-normal placeholder:text-[var(--muted)]"
                     />
                   </label>
                   <button type="button" onClick={() => bulkPatch({ archived: true }, "Notes archived")} className={bulkBtn}>

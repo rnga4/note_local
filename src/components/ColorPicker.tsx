@@ -14,10 +14,8 @@ export function ColorPicker({ value, onChange }: { value: Color; onChange: (c: C
           className="grid h-11 w-11 place-items-center"
         >
           <span
-            className={`h-5 w-5 rounded-full border-2 ${COLOR_DOT[c]} ${
-              value === c
-                ? "pop border-[var(--text)] ring-2 ring-[var(--text)]"
-                : "border-[var(--border)]"
+            className={`h-5 w-5 rounded-full ink ${COLOR_DOT[c]} ${
+              value === c ? "pop border-[var(--text)] ring-2 ring-[var(--text)]" : ""
             }`}
           />
         </button>

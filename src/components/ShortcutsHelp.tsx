@@ -52,7 +52,7 @@ export function ShortcutsHelp({ onClose }: { onClose: () => void }) {
           {ROWS.map(([k, desc]) => (
             <div key={k} className="flex items-center justify-between gap-4">
               <dt>
-                <kbd className="border-2 border-[var(--border)] bg-[var(--surface-2)] px-2 py-0.5 font-bold">{k}</kbd>
+                <kbd className="ink bg-[var(--surface-2)] px-2 py-0.5 font-bold">{k}</kbd>
               </dt>
               <dd className="text-right text-[var(--muted)]">{desc}</dd>
             </div>

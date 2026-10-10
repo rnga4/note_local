@@ -14,7 +14,7 @@ export function ImageStrip({ images, onRemove }: { images: string[]; onRemove: (
             type="button"
             aria-label={`Open image ${i + 1}`}
             onClick={() => setView(i)}
-            className="block border-2 border-[var(--border)]"
+            className="block ink"
           >
             <img src={src} alt="" className="h-20 w-20 object-cover" />
           </button>

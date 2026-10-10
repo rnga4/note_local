@@ -182,7 +182,7 @@ export function NoteCard({
       style={leaving ? undefined : ({ "--enter-delay": `${Math.min(index, 12) * 35}ms` } as CSSProperties)}
     >
       {note.pinned && view === "notes" && (
-        <span className="absolute right-2 top-2 border-2 border-[var(--border)] bg-[var(--text)] px-1.5 py-0.5 text-xs font-bold text-[var(--bg)]">
+        <span className="ink absolute right-2 top-2 bg-[var(--text)] px-1.5 py-0.5 text-xs font-bold text-[var(--bg)]">
           Pinned
         </span>
       )}
@@ -190,7 +190,7 @@ export function NoteCard({
       {selecting && (
         <span
           aria-hidden="true"
-          className={`absolute left-2 top-2 grid h-6 w-6 place-items-center border-2 border-[var(--border)] ${
+          className={`ink absolute left-2 top-2 grid h-6 w-6 place-items-center ${
             selected ? "bg-[var(--text)] text-[var(--bg)]" : "bg-[var(--surface)]"
           }`}
         >
@@ -235,7 +235,7 @@ export function NoteCard({
               type="button"
               aria-label={selecting ? "Select note" : `Open image ${i + 1} of ${note.images.length}`}
               onClick={() => (selecting ? onToggleSelect?.(note.id) : setLightbox(i))}
-              className="block border-2 border-[var(--border)]"
+              className="block ink"
             >
               <img src={src} alt="" loading="lazy" className="h-20 w-20 object-cover" />
             </button>
@@ -245,7 +245,7 @@ export function NoteCard({
               type="button"
               aria-label={selecting ? "Select note" : `Open image 5 of ${note.images.length}`}
               onClick={() => (selecting ? onToggleSelect?.(note.id) : setLightbox(4))}
-              className="grid h-20 w-20 place-items-center border-2 border-[var(--border)] text-xs font-bold"
+              className="ink grid h-20 w-20 place-items-center text-xs font-bold"
             >
               +{note.images.length - 4}
             </button>
@@ -259,7 +259,7 @@ export function NoteCard({
             <li key={i.id}>
               {selecting ? (
                 <span className="flex min-h-11 items-center gap-2 pl-8 text-sm">
-                  <span className={`h-4 w-4 shrink-0 border-2 border-[var(--border)] ${i.done ? "bg-[var(--text)]" : ""}`} />
+                  <span className={`ink-xs h-4 w-4 shrink-0 ${i.done ? "bg-[var(--text)]" : ""}`} />
                   <span className={i.done ? "text-[var(--muted)] line-through" : ""}>
                     <Highlight text={i.text} query={query} />
                   </span>
@@ -290,7 +290,7 @@ export function NoteCard({
           {note.labels.map((l) => (
             <span
               key={l}
-              className="border-2 border-[var(--border)] bg-[var(--surface)] px-2 py-0.5 text-xs font-medium"
+              className="ink bg-[var(--surface)] px-2 py-0.5 text-xs font-medium"
             >
               {l}
             </span>

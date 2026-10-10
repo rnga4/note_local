@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#ffe600" };
 
-const themeInit = `try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.classList.toggle("dark",t==="dark")}catch(e){}`;
+const themeInit = `(function(){try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";var s=localStorage.getItem("skin");var d=document.documentElement;d.classList.toggle("dark",t==="dark");if(s==="material"||s==="ios")d.classList.add("skin-"+s)}catch(e){}})()`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

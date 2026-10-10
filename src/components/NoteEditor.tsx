@@ -130,7 +130,7 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
               type="button"
               onClick={() => patch({ labels: d.labels.filter((x) => x !== l) })}
               aria-label={`Remove label ${l}`}
-              className="flex min-h-11 items-center gap-1 border-2 border-[var(--border)] bg-[var(--surface)] px-3 text-xs font-medium hover:bg-[var(--hover)]"
+              className="ink flex min-h-11 items-center gap-1 bg-[var(--surface)] px-3 text-xs font-medium hover:bg-[var(--hover)]"
             >
               {l}
               <CloseIcon className="h-3.5 w-3.5" />
