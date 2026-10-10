@@ -98,4 +98,5 @@ The ink block: a 2px solid border plus a hard offset shadow (`4px 4px 0`, never 
 - PWA share target: the manifest accepts a shared title, text, and URL into a `/share` route that pre-fills a new note, so capturing from the phone share sheet lands in the app instead of a text dump.
 - Offline writes queue instead of failing: a change that cannot reach the server is kept optimistically in the list and replayed on reconnect, because a local-first tool that loses a note typed on the train is not trustworthy.
 - Custom right-click menu on note cards: the native browser menu is replaced with the app's own (Open, pin, archive, trash, copy text, color, labels), so a desktop user reaches a card's actions where the pointer already is; it stays keyboard-operable (Shift+F10, arrow keys, Escape) rather than disabling right-click outright.
+- A picture opens in a full-screen viewer: a thumbnail is content the user wants to actually see, so clicking it shows the image large with prev/next, a counter, and arrow keys, instead of only opening the editor; the viewer layers above the editor and the right-click menu, so Escape closes one layer at a time.
 

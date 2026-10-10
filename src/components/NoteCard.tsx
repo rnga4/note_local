@@ -4,6 +4,7 @@ import { COLOR_KEYS, noteClass } from "@/lib/colors";
 import type { Note, NotePatch, Sort, View } from "@/lib/types";
 import { ContextMenu, type MenuAction } from "./ContextMenu";
 import { Highlight } from "./Highlight";
+import { Lightbox } from "./Lightbox";
 import {
   ArchiveIcon,
   ArrowDownIcon,
@@ -66,6 +67,7 @@ export function NoteCard({
 }: Props) {
   const [leaving, setLeaving] = useState(false);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [lightbox, setLightbox] = useState<number | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
   const openMenu = (x: number, y: number) => {
@@ -223,25 +225,33 @@ export function NoteCard({
             <Highlight text={note.content} query={query} />
           </span>
         )}
-        {note.images.length > 0 && (
-          <span className="mt-2 flex flex-wrap gap-1">
-            {note.images.slice(0, 4).map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt=""
-                loading="lazy"
-                className="h-20 w-20 border-2 border-[var(--border)] object-cover"
-              />
-            ))}
-            {note.images.length > 4 && (
-              <span className="grid h-20 w-20 place-items-center border-2 border-[var(--border)] text-xs font-bold">
-                +{note.images.length - 4}
-              </span>
-            )}
-          </span>
-        )}
       </button>
+
+      {note.images.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {note.images.slice(0, 4).map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={selecting ? "Select note" : `Open image ${i + 1} of ${note.images.length}`}
+              onClick={() => (selecting ? onToggleSelect?.(note.id) : setLightbox(i))}
+              className="block border-2 border-[var(--border)]"
+            >
+              <img src={src} alt="" loading="lazy" className="h-20 w-20 object-cover" />
+            </button>
+          ))}
+          {note.images.length > 4 && (
+            <button
+              type="button"
+              aria-label={selecting ? "Select note" : `Open image 5 of ${note.images.length}`}
+              onClick={() => (selecting ? onToggleSelect?.(note.id) : setLightbox(4))}
+              className="grid h-20 w-20 place-items-center border-2 border-[var(--border)] text-xs font-bold"
+            >
+              +{note.images.length - 4}
+            </button>
+          )}
+        </div>
+      )}
 
       {note.type === "list" && (
         <ul className="mt-1 space-y-0.5">
@@ -393,6 +403,10 @@ export function NoteCard({
           onClose={() => setMenu(null)}
           returnFocusTo={openerRef.current}
         />
+      )}
+
+      {lightbox !== null && (
+        <Lightbox images={note.images} start={lightbox} onClose={() => setLightbox(null)} label={note.title || "Image"} />
       )}
     </article>
   );

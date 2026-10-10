@@ -57,6 +57,8 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
     focusables()[0]?.focus();
 
     const onKey = (e: KeyboardEvent) => {
+      // an open image viewer owns Escape and Tab while it is up
+      if (document.querySelector("[data-lightbox]")) return;
       if (e.key === "Escape") {
         e.preventDefault();
         saveRef.current();
