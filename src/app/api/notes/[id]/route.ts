@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { guard } from "@/lib/auth";
 import { deleteNote, updateNote } from "@/lib/notes";
 import { NotePatch } from "@/lib/types";
 
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic";
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  const denied = await guard();
+  if (denied) return denied;
   const { id } = await params;
   const parsed = NotePatch.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -15,6 +18,8 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Ctx) {
+  const denied = await guard();
+  if (denied) return denied;
   const { id } = await params;
   return deleteNote(id) ? new NextResponse(null, { status: 204 }) : NextResponse.json({ error: "not found" }, { status: 404 });
 }

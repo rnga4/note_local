@@ -18,6 +18,8 @@ type Props = {
   onRenameLabel: (from: string, to: string) => void;
   onDeleteLabel: (name: string) => void;
   onHelp: () => void;
+  authEnabled?: boolean;
+  onLogout?: () => void;
   className?: string;
 };
 
@@ -45,6 +47,8 @@ export function NavList({
   onRenameLabel,
   onDeleteLabel,
   onHelp,
+  authEnabled = false,
+  onLogout,
   className = "",
 }: Props) {
   const [confirming, setConfirming] = useState(false);
@@ -212,6 +216,15 @@ export function NavList({
         Keyboard shortcuts
         <kbd className="rounded border-2 border-[var(--border)] px-1 text-xs font-bold text-[var(--muted)]">?</kbd>
       </button>
+      {authEnabled && (
+        <button
+          type="button"
+          onClick={onLogout}
+          className="flex min-h-11 items-center px-3 text-left text-sm font-medium text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+        >
+          Log out
+        </button>
+      )}
     </nav>
   );
 }

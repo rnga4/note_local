@@ -17,7 +17,7 @@ const linkBtn =
 
 const bulkBtn = "nb-btn min-h-11 px-3 text-sm font-bold text-[var(--text)]";
 
-export function NotesApp() {
+export function NotesApp({ authEnabled = false }: { authEnabled?: boolean }) {
   const [view, setView] = useState<View>("notes");
   const [q, setQ] = useState("");
   const [label, setLabel] = useState("");
@@ -386,6 +386,11 @@ export function NotesApp() {
     onHelp: () => {
       setHelpOpen(true);
       setNavOpen(false);
+    },
+    authEnabled,
+    onLogout: () => {
+      void fetch("/api/logout", { method: "POST" }).catch(() => {});
+      window.location.href = "/login";
     },
   };
 
