@@ -11,7 +11,7 @@ import { NavList, Sidebar } from "./Sidebar";
 type Status = "loading" | "ready" | "error";
 
 const linkBtn =
-  "min-h-11 rounded px-2 text-sm text-[var(--text)] underline underline-offset-4 hover:bg-[var(--hover)]";
+  "min-h-11 px-2 text-sm font-bold text-[var(--text)] underline decoration-2 underline-offset-4 hover:bg-[var(--hover)]";
 
 export function NotesApp() {
   const [view, setView] = useState<View>("notes");
@@ -187,11 +187,11 @@ export function NotesApp() {
     body = (
       <>
         {showSections && (
-          <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">Pinned</h2>
+          <h2 className="mb-2 text-sm font-black tracking-tight">Pinned</h2>
         )}
         {pinned.length > 0 && grid(pinned)}
         {showSections && others.length > 0 && (
-          <h2 className="mb-2 mt-6 text-sm font-medium text-[var(--muted)]">Others</h2>
+          <h2 className="mb-2 mt-6 text-sm font-black tracking-tight">Others</h2>
         )}
         {others.length > 0 && grid(others)}
       </>
@@ -200,7 +200,7 @@ export function NotesApp() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg)]">
+      <header className="sticky top-0 z-40 border-b-2 border-[var(--border)] bg-[var(--bg)]">
         <div className="flex items-center gap-2 px-2 py-1.5 md:gap-4 md:px-4 md:py-2">
           <button
             ref={menuBtnRef}
@@ -209,20 +209,20 @@ export function NotesApp() {
             aria-label={navOpen ? "Hide menu" : "Show menu"}
             aria-expanded={navOpen}
             aria-controls="nav-panel"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] md:hidden"
+            className="nb-btn grid h-11 w-11 shrink-0 place-items-center text-[var(--text)] md:hidden"
           >
             <MenuIcon />
           </button>
-          <h1 className="shrink-0 text-lg font-semibold">Notes</h1>
+          <h1 className="shrink-0 text-lg font-black tracking-tight">Notes</h1>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search notes"
             aria-label="Search notes"
-            className="min-h-11 min-w-0 flex-1 rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-3 text-sm placeholder:text-[var(--muted)] md:max-w-xl"
+            className="nb min-h-11 min-w-0 flex-1 px-3 text-sm placeholder:text-[var(--muted)] md:max-w-xl"
           />
         </div>
-        <div id="nav-panel" hidden={!navOpen} className="enter-drop border-t border-[var(--border)] px-2 py-2 md:hidden">
+        <div id="nav-panel" hidden={!navOpen} className="enter-drop border-t-2 border-[var(--border)] px-2 py-2 md:hidden">
           <NavList {...navProps} />
         </div>
       </header>

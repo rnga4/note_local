@@ -8,7 +8,7 @@ function Svg({ className, children }: IconProps & { children: ReactNode }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={2.2}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -26,7 +26,7 @@ export function PinIcon({ className, filled }: IconProps & { filled?: boolean })
       viewBox="0 0 24 24"
       fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={2.2}
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"

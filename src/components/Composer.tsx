@@ -33,9 +33,9 @@ function clearDraft() {
 }
 
 const iconBtn =
-  "grid h-11 w-11 place-items-center rounded text-[var(--muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text)]";
+  "grid h-11 w-11 place-items-center text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]";
 const textBtn =
-  "min-h-11 rounded px-3 text-sm text-[var(--muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text)]";
+  "min-h-11 px-3 text-sm font-bold text-[var(--text)] hover:bg-[var(--hover)]";
 
 export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
   const [draft, setDraft] = useState<NoteInput>(EMPTY);
@@ -83,11 +83,11 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
 
   if (!open) {
     return (
-      <div className="mb-6 flex max-w-xl items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 mx-auto">
+      <div className="nb mx-auto mb-6 flex max-w-xl items-center gap-1 px-2">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="min-h-11 flex-1 rounded px-2 text-left text-sm text-[var(--muted)] hover:text-[var(--text)]"
+          className="min-h-11 flex-1 px-2 text-left text-sm text-[var(--muted)] hover:text-[var(--text)]"
         >
           Take a note...
         </button>
@@ -97,7 +97,7 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
             patch({ type: "list" });
             setOpen(true);
           }}
-          className="min-h-11 rounded px-3 text-sm text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+          className="min-h-11 px-3 text-sm font-bold text-[var(--text)] hover:bg-[var(--hover)]"
         >
           New list
         </button>
@@ -106,14 +106,14 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
   }
 
   return (
-    <div className={`mx-auto mb-6 max-w-xl rounded-lg border p-3 ${noteClass(draft.color)}`}>
+    <div className={`nb mx-auto mb-6 max-w-xl p-3 ${noteClass(draft.color)}`}>
       <input
         autoFocus
         value={draft.title}
         onChange={(e) => patch({ title: e.target.value })}
         placeholder="Title"
         aria-label="Title"
-        className="mb-1 min-h-11 w-full bg-transparent font-medium placeholder:text-[var(--muted)]"
+        className="mb-1 min-h-11 w-full bg-transparent font-bold placeholder:text-[var(--muted)]"
       />
       {draft.type === "text" ? (
         <textarea
@@ -150,7 +150,7 @@ export function Composer({ onCreate }: { onCreate: (n: NoteInput) => void }) {
             type="button"
             onClick={save}
             disabled={!hasContent}
-            className="min-h-11 rounded bg-[var(--text)] px-4 text-sm font-medium text-[var(--bg)] transition disabled:opacity-50"
+            className="nb-btn min-h-11 bg-[var(--accent)] px-4 text-sm font-bold text-[var(--accent-ink)]"
           >
             Save
           </button>

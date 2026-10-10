@@ -11,13 +11,13 @@ export function ColorPicker({ value, onChange }: { value: Color; onChange: (c: C
           aria-label={c}
           aria-pressed={value === c}
           onClick={() => onChange(c)}
-          className="grid h-11 w-11 place-items-center rounded"
+          className="grid h-11 w-11 place-items-center"
         >
           <span
-            className={`h-5 w-5 rounded-full border ${COLOR_DOT[c]} ${
+            className={`h-5 w-5 rounded-full border-2 ${COLOR_DOT[c]} ${
               value === c
-                ? "border-2 border-[var(--ring)]"
-                : "border-[var(--border-strong)]"
+                ? "border-[var(--text)] ring-2 ring-[var(--text)]"
+                : "border-[var(--border)]"
             }`}
           />
         </button>

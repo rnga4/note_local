@@ -12,7 +12,7 @@ type Props = {
 };
 
 const btn =
-  "grid h-11 w-11 place-items-center rounded text-[var(--muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text)]";
+  "grid h-11 w-11 place-items-center text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]";
 
 export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
   const toggle = (itemId: string) =>
@@ -21,9 +21,9 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
   const showUntitled = !note.title && !(note.type === "text" && note.content);
 
   return (
-    <article className={`group relative mb-3 break-inside-avoid rounded-lg border p-3 ${noteClass(note.color)}`}>
+    <article className={`nb group relative mb-3 break-inside-avoid p-3 ${noteClass(note.color)}`}>
       {note.pinned && view === "notes" && (
-        <span className="absolute right-2 top-2 rounded border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted)]">
+        <span className="absolute right-2 top-2 border-2 border-[var(--border)] bg-[var(--text)] px-1.5 py-0.5 text-xs font-bold text-[var(--bg)]">
           Pinned
         </span>
       )}
@@ -31,9 +31,9 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
       <button
         type="button"
         onClick={() => onOpen(note)}
-        className={`block min-h-11 w-full rounded px-1 py-1.5 text-left ${note.pinned && view === "notes" ? "pr-20" : ""}`}
+        className={`block min-h-11 w-full px-1 py-1.5 text-left ${note.pinned && view === "notes" ? "pr-20" : ""}`}
       >
-        {note.title && <span className="mb-1 block font-medium">{note.title}</span>}
+        {note.title && <span className="mb-1 block font-bold">{note.title}</span>}
         {showUntitled && <span className="mb-1 block text-sm font-medium text-[var(--muted)]">Untitled</span>}
         {note.type === "text" && note.content && (
           <span className="line-clamp-12 whitespace-pre-wrap text-sm">{note.content}</span>
@@ -66,7 +66,7 @@ export function NoteCard({ note, view, onOpen, onPatch, onDelete }: Props) {
           {note.labels.map((l) => (
             <span
               key={l}
-              className="rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-0.5 text-xs text-[var(--muted)]"
+              className="border-2 border-[var(--border)] bg-[var(--surface)] px-2 py-0.5 text-xs font-medium"
             >
               {l}
             </span>

@@ -12,7 +12,7 @@ export function ChecklistEditor({ items, onChange }: { items: Item[]; onChange: 
     <div className="space-y-0.5">
       {items.map((i) => (
         <div key={i.id} className="flex items-center gap-1">
-          <label className="grid h-11 w-11 shrink-0 place-items-center rounded hover:bg-[var(--hover)]">
+          <label className="grid h-11 w-11 shrink-0 place-items-center hover:bg-[var(--hover)]">
             <input
               type="checkbox"
               checked={i.done}
@@ -32,7 +32,7 @@ export function ChecklistEditor({ items, onChange }: { items: Item[]; onChange: 
             type="button"
             aria-label={`Remove "${i.text}"`}
             onClick={() => onChange(items.filter((x) => x.id !== i.id))}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+            className="grid h-11 w-11 shrink-0 place-items-center text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
           >
             <CloseIcon />
           </button>

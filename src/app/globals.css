@@ -3,31 +3,37 @@
 
 :root {
   color-scheme: light;
-  --bg: #fafafa;
+  --bg: #fffdf5;
   --surface: #ffffff;
-  --surface-2: #f5f5f5;
-  --text: #171717;
-  --muted: #525252;
-  --border: #d4d4d4;
-  --border-strong: #737373;
-  --hover: rgb(0 0 0 / 0.05);
-  --ring: #171717;
-  --scrim: rgb(0 0 0 / 0.45);
+  --surface-2: #f3edda;
+  --text: #000000;
+  --muted: #4b4b4b;
+  --border: #000000;
+  --border-strong: #000000;
+  --accent: #ffe600;
+  --accent-ink: #000000;
+  --hover: #f0e9d4;
+  --ring: #000000;
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow: #000000;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
   color-scheme: dark;
-  --bg: #0a0a0a;
-  --surface: #171717;
+  --bg: #0e0e0e;
+  --surface: #1a1a1a;
   --surface-2: #262626;
-  --text: #f5f5f5;
-  --muted: #a3a3a3;
-  --border: #404040;
-  --border-strong: #737373;
-  --hover: rgb(255 255 255 / 0.06);
-  --ring: #f5f5f5;
-  --scrim: rgb(0 0 0 / 0.6);
+  --text: #ffffff;
+  --muted: #b5b5b5;
+  --border: #ffffff;
+  --border-strong: #ffffff;
+  --accent: #ffe600;
+  --accent-ink: #000000;
+  --hover: rgb(255 255 255 / 0.1);
+  --ring: #ffffff;
+  --scrim: rgb(0 0 0 / 0.7);
+  --shadow: #ffffff;
 }
 
 body {
@@ -40,91 +46,112 @@ input[type="checkbox"] {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ring);
+  outline: 3px solid var(--ring);
   outline-offset: 2px;
 }
 
-.note {
-  background-color: var(--note-bg);
-  border-color: var(--note-border);
+@layer base {
+  /* colors cross-fade on theme or note-color change instead of cutting */
+  * {
+    transition: color 150ms var(--ease), background-color 150ms var(--ease),
+      border-color 150ms var(--ease), opacity 150ms var(--ease);
+  }
 }
 
-.note-default {
-  --note-bg: var(--surface);
-  --note-border: var(--border);
+@layer components {
+  /* Identity motif (DESIGN.md): 2px ink border plus a hard offset shadow, no blur. */
+  .nb {
+    border: 2px solid var(--border);
+    background-color: var(--surface);
+    box-shadow: 4px 4px 0 0 var(--shadow);
+  }
+
+  .nb-btn {
+    border: 2px solid var(--border);
+    background-color: var(--surface);
+    box-shadow: 3px 3px 0 0 var(--shadow);
+    transition: transform 120ms var(--ease), box-shadow 120ms var(--ease),
+      background-color 150ms var(--ease), color 150ms var(--ease);
+  }
+  .nb-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 0 var(--shadow);
+  }
+  .nb-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--shadow);
+  }
+  .nb-btn:disabled {
+    opacity: 0.5;
+  }
+  .nb-btn:disabled:hover {
+    transform: none;
+    box-shadow: 3px 3px 0 0 var(--shadow);
+  }
+
+  .note {
+    background-color: var(--note-bg);
+    animation: enter-rise 150ms var(--ease) backwards;
+  }
+
+  .note-default {
+    --note-bg: var(--surface);
+  }
+  .note-red {
+    --note-bg: #fee2e2;
+  }
+  .note-orange {
+    --note-bg: #ffedd5;
+  }
+  .note-yellow {
+    --note-bg: #fef9c3;
+  }
+  .note-green {
+    --note-bg: #dcfce7;
+  }
+  .note-teal {
+    --note-bg: #ccfbf1;
+  }
+  .note-blue {
+    --note-bg: #dbeafe;
+  }
+  .note-purple {
+    --note-bg: #f3e8ff;
+  }
+  .note-pink {
+    --note-bg: #fce7f3;
+  }
+
+  .dark .note-default {
+    --note-bg: #1a1a1a;
+  }
+  .dark .note-red {
+    --note-bg: rgb(69 10 10 / 0.75);
+  }
+  .dark .note-orange {
+    --note-bg: rgb(67 20 7 / 0.75);
+  }
+  .dark .note-yellow {
+    --note-bg: rgb(71 42 0 / 0.75);
+  }
+  .dark .note-green {
+    --note-bg: rgb(5 46 22 / 0.75);
+  }
+  .dark .note-teal {
+    --note-bg: rgb(7 49 46 / 0.75);
+  }
+  .dark .note-blue {
+    --note-bg: rgb(23 37 84 / 0.75);
+  }
+  .dark .note-purple {
+    --note-bg: rgb(59 7 100 / 0.75);
+  }
+  .dark .note-pink {
+    --note-bg: rgb(80 7 43 / 0.75);
+  }
 }
 
-.note-red {
-  --note-bg: #fee2e2;
-  --note-border: #fca5a5;
-}
-.note-orange {
-  --note-bg: #ffedd5;
-  --note-border: #fdba74;
-}
-.note-yellow {
-  --note-bg: #fef9c3;
-  --note-border: #fde047;
-}
-.note-green {
-  --note-bg: #dcfce7;
-  --note-border: #86efac;
-}
-.note-teal {
-  --note-bg: #ccfbf1;
-  --note-border: #5eead4;
-}
-.note-blue {
-  --note-bg: #dbeafe;
-  --note-border: #93c5fd;
-}
-.note-purple {
-  --note-bg: #f3e8ff;
-  --note-border: #d8b4fe;
-}
-.note-pink {
-  --note-bg: #fce7f3;
-  --note-border: #f9a8d4;
-}
-
-.dark .note-default {
-  --note-bg: #171717;
-  --note-border: #404040;
-}
-.dark .note-red {
-  --note-bg: rgb(69 10 10 / 0.7);
-  --note-border: #991b1b;
-}
-.dark .note-orange {
-  --note-bg: rgb(67 20 7 / 0.7);
-  --note-border: #9a3412;
-}
-.dark .note-yellow {
-  --note-bg: rgb(71 42 0 / 0.7);
-  --note-border: #a16207;
-}
-.dark .note-green {
-  --note-bg: rgb(5 46 22 / 0.7);
-  --note-border: #15803d;
-}
-.dark .note-teal {
-  --note-bg: rgb(7 49 46 / 0.7);
-  --note-border: #0f766e;
-}
-.dark .note-blue {
-  --note-bg: rgb(23 37 84 / 0.7);
-  --note-border: #1d4ed8;
-}
-.dark .note-purple {
-  --note-bg: rgb(59 7 100 / 0.7);
-  --note-border: #7e22ce;
-}
-.dark .note-pink {
-  --note-bg: rgb(80 7 43 / 0.7);
-  --note-border: #be185d;
-}
-
-/* MOTION 2 (DESIGN.md): one-shot enter transitions, 150ms, one easing. Purposes are logged in DESIGN.md. */
+/* MOTION 2 (DESIGN.md): one-shot enter transitions, 150ms, one easing. */
 @keyframes enter-rise {
   from {
     opacity: 0;
@@ -157,16 +184,6 @@ input[type="checkbox"] {
 }
 
 @layer utilities {
-  /* colors cross-fade on theme/note-color change instead of cutting */
-  * {
-    transition: color 150ms var(--ease), background-color 150ms var(--ease),
-      border-color 150ms var(--ease), opacity 150ms var(--ease);
-  }
-
-  .note {
-    animation: enter-rise 150ms var(--ease) backwards;
-  }
-
   .enter-drop {
     animation: enter-drop 150ms var(--ease) backwards;
   }

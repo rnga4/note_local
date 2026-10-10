@@ -15,9 +15,9 @@ type Props = {
 };
 
 const item = (active: boolean) =>
-  `flex min-h-11 w-full items-center gap-3 rounded px-3 text-left text-sm transition ${
+  `flex min-h-11 w-full items-center gap-3 px-3 text-left text-sm ${
     active
-      ? "bg-[var(--surface-2)] font-semibold text-[var(--text)]"
+      ? "bg-[var(--text)] font-black text-[var(--bg)]"
       : "font-medium text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
   }`;
 
@@ -31,7 +31,7 @@ export function NavList({ view, label, labels, trashCount, onView, onLabel, onEm
   }, [confirming]);
 
   return (
-    <nav className={`flex flex-col gap-0.5 ${className}`}>
+    <nav className={`flex flex-col gap-1 ${className}`}>
       <button type="button" className={item(view === "notes" && !label)} onClick={() => onView("notes")}>
         Notes
       </button>
@@ -57,7 +57,7 @@ export function NavList({ view, label, labels, trashCount, onView, onLabel, onEm
               setConfirming(true);
             }
           }}
-          className={`mt-2 min-h-11 px-3 text-left text-sm underline underline-offset-4 transition ${
+          className={`mt-2 min-h-11 px-3 text-left text-sm font-bold underline decoration-2 underline-offset-4 hover:bg-[var(--hover)] ${
             confirming ? "text-[var(--text)]" : "text-[var(--muted)] hover:text-[var(--text)]"
           }`}
         >
@@ -68,7 +68,7 @@ export function NavList({ view, label, labels, trashCount, onView, onLabel, onEm
       <a
         href="/api/export"
         download
-        className="mt-1 flex min-h-11 items-center rounded px-3 text-left text-sm text-[var(--muted)] transition hover:bg-[var(--hover)] hover:text-[var(--text)]"
+        className="mt-1 flex min-h-11 items-center px-3 text-left text-sm font-medium text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
       >
         Download backup
       </a>
@@ -78,7 +78,7 @@ export function NavList({ view, label, labels, trashCount, onView, onLabel, onEm
 
 export function Sidebar(props: Props) {
   return (
-    <aside className="hidden w-56 shrink-0 py-3 md:block">
+    <aside className="hidden w-56 shrink-0 border-r-2 border-[var(--border)] py-3 md:block">
       <NavList {...props} />
     </aside>
   );

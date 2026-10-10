@@ -76,14 +76,14 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
         aria-modal="true"
         aria-label="Edit note"
         onClick={(e) => e.stopPropagation()}
-        className={`my-auto w-full max-w-xl rounded-lg border p-4 ${noteClass(d.color)} max-h-[calc(100dvh-2rem)] overflow-y-auto`}
+        className={`nb my-auto w-full max-w-xl p-4 ${noteClass(d.color)} max-h-[calc(100dvh-2rem)] overflow-y-auto`}
       >
         <input
           value={d.title}
           onChange={(e) => patch({ title: e.target.value })}
           placeholder="Title"
           aria-label="Title"
-          className="mb-1 min-h-11 w-full bg-transparent text-lg font-medium placeholder:text-[var(--muted)]"
+          className="mb-1 min-h-11 w-full bg-transparent text-lg font-bold placeholder:text-[var(--muted)]"
         />
         {d.type === "text" ? (
           <textarea
@@ -104,7 +104,7 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
               type="button"
               onClick={() => patch({ labels: d.labels.filter((x) => x !== l) })}
               aria-label={`Remove label ${l}`}
-              className="flex min-h-11 items-center gap-1 rounded border border-[var(--border)] bg-[var(--surface)] px-3 text-xs text-[var(--muted)] hover:text-[var(--text)]"
+              className="flex min-h-11 items-center gap-1 border-2 border-[var(--border)] bg-[var(--surface)] px-3 text-xs font-medium hover:bg-[var(--hover)]"
             >
               {l}
               <CloseIcon className="h-3.5 w-3.5" />
@@ -129,7 +129,7 @@ export function NoteEditor({ note, onSave, onClose }: Props) {
           <button
             type="button"
             onClick={save}
-            className="min-h-11 rounded bg-[var(--text)] px-4 text-sm font-medium text-[var(--bg)]"
+            className="nb-btn min-h-11 bg-[var(--accent)] px-4 text-sm font-bold text-[var(--accent-ink)]"
           >
             Save
           </button>
